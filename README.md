@@ -6,7 +6,7 @@ To install the required dependencies and make everything work with uv, follow th
 2. Use the following command:
 
     ```
-    git clone: https://github.com/Alessandro-Rocchi/project_CompData.git
+    git clone https://github.com/Alessandro-Rocchi/project_CompData.git
     ```
 3. Check that the command clone everything from the repository
 4. Run the command:
