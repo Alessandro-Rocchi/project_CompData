@@ -12,8 +12,10 @@ To install the required dependencies and make everything work with uv, follow th
 4. Run the command:
 
    ```
+   
    git pull
    ```
+
 5. Then run the command to install all dependencies needed:
 
    ```
