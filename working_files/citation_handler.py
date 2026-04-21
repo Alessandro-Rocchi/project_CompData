@@ -1,5 +1,6 @@
 from rdflib import Graph, Literal, URIRef, RDF
 from rdflib.plugins.stores.sparqlstore import SPARQLUpdateStore
+import urllib.request
 from pandas import Series, read_csv
 
 my_graph = Graph()
@@ -59,15 +60,23 @@ for idx, rows in citations.iterrows():
 print("-- Number of triples added to the graph after processing the venues")
 print(len(my_graph))
 
-store = SPARQLUpdateStore()
+print("Preparazione dell'invio massivo a Blazegraph...")
 
 endpoint = 'http://127.0.0.1:9999/blazegraph/sparql'
 
-store.open((endpoint, endpoint))
+rdf_data = my_graph.serialize(format="nt").encode("utf-8")
 
-for triple in my_graph.triples((None, None, None)):
-   store.add(triple)
+req = urllib.request.Request(
+    endpoint,
+    data=rdf_data,
+    headers={'Content-Type': 'text/plain'} # text/plain è il formato esatto per N-Triples
+)
 
-store.close()
-
-print("connessione chiusa")
+try:
+    with urllib.request.urlopen(req) as response:
+        if response.status == 200:
+            print("Connessione chiusa. Caricamento completato con successo in pochi secondi!")
+        else:
+            print(f"Errore anomalo. Status Code: {response.status}")
+except Exception as e:
+    print(f"Si è verificato un errore di rete durante l'invio: {e}")
