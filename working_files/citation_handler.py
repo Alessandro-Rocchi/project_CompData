@@ -48,9 +48,9 @@ class CitationUploadHandler:
         citations["citing"] = citations["citing"].str.strip()
         citations["cited"] = citations["cited"].str.strip()
 
-        for rows in citations.iterrows():
+        for idx, rows in citations.iterrows():
 
-            subj = URIRef(base_url + rows["oci"])    
+            subj = URIRef(base_url + rows["oci"]) 
             my_graph.add((subj, RDF.type, Citation))
             my_graph.add((subj, citing, URIRef(rows["citing"])))
             my_graph.add((subj, cited, URIRef(rows["cited"])))
@@ -60,13 +60,7 @@ class CitationUploadHandler:
                 my_graph.add((subj, RDF.type, Journal_SC))
             elif rows["author_sc"]:
                 my_graph.add((subj, RDF.type, Author_SC))
-
-
-        print("-- Number of triples added to the graph after processing the venues")
-        print(len(my_graph))
-
-        print("Preparazione dell'invio massivo a Blazegraph...")
-
+        
         endpoint = 'http://127.0.0.1:9999/blazegraph/sparql'
 
         rdf_data = my_graph.serialize(format="nt").encode("utf-8")
@@ -74,19 +68,19 @@ class CitationUploadHandler:
         req = urllib.request.Request(
             endpoint,
             data=rdf_data,
-            headers={'Content-Type': 'text/plain'} # text/plain è il formato esatto per N-Triples
+            headers={'Content-Type': 'text/plain'}
         )
 
         try:
             with urllib.request.urlopen(req) as response:
                 if response.status == 200:
-                    print("Connessione chiusa. Caricamento completato con successo in pochi secondi!")
                     check = True
                 else:
-                    print(f"Errore anomalo. Status Code: {response.status}")
                     check = False
         except Exception as e:
-            print(f"Si è verificato un errore di rete durante l'invio: {e}")
             check = False
         return check
-        
+
+uploadHandler = CitationUploadHandler()
+
+print(uploadHandler.PushDatatoDB("data/dh_citations.csv"))
