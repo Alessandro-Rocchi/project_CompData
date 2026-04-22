@@ -1,4 +1,4 @@
-from UploadCitationAndBibliographic import upload_citation_and_bibliographic
+from UploadCitationAndBibliographic import CitationUploadHandler, BibliographicUploadHandler
 
 class QueryHandler(): # fatto da solo da Copilot
     def __init__(self, dbPathorURL: str):
