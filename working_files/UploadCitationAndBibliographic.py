@@ -53,11 +53,14 @@ class CitationUploadHandler(UploadHandler):
                             "author_sc": "string"
                         })
     
-        #to avoid mistake the method strip delete every blank space
-        citations.columns = citations.columns.str.strip()
+        #to avoid mistake the method strip delete every blank space and avoid any syntax problem
         citations["oci"] = citations["oci"].str.strip()
         citations["citing"] = citations["citing"].str.strip()
         citations["cited"] = citations["cited"].str.strip()
+        citations["creation"] = citations["creation"].str.strip()
+        citations["timespan"] = citations["timespan"].str.strip()
+        citations["journal_sc"] = citations["journal_sc"].str.strip().str.lower() == "true"
+        citations["author_sc"] = citations["author_sc"].str.strip().str.lower() == "true"
 
         citations_local_id = {}
 
@@ -79,7 +82,7 @@ class CitationUploadHandler(UploadHandler):
             if rows["author_sc"]: #define if a citation include a author self citation
                 my_graph.add((subj, RDF.type, Author_SC))
         
-        endpoint = self.getDBPathorURL() #set the endpoint using the method of the superclass
+        endpoint = "http://localhost:3030/mioprogetto/data" #set the endpoint using the method of the superclass
 
         rdf_data = my_graph.serialize(format="nt").encode("utf-8") #serialize all the data in nt format and encode it in UTF-8
 
