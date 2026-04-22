@@ -62,7 +62,7 @@ print(len(my_graph))
 
 print("Preparazione dell'invio massivo a Blazegraph...")
 
-endpoint = 'http://127.0.0.1:9999/blazegraph/sparql'
+endpoint = 'http://10.201.48.251:9999/blazegraph/sparql'
 
 rdf_data = my_graph.serialize(format="nt").encode("utf-8")
 
