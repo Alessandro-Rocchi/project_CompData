@@ -19,7 +19,7 @@ class CitationUploadHandler(UploadHandler):
         super().__init__(dbPathorURL) #Recall the attribute dbPathorURL from the superclass
         self.base_url = "https://schema.org/" #Set a base_url for RDF on the constructor
 
-    def PushDatatoDB(self, path: str)-> bool: #Takes the path of a CSV in input, transform the data in RDF triple and push them to a graph DB
+    def PushDatatoDB(self, path: str) -> bool: #Takes the path of a CSV in input, transform the data in RDF triple and push them to a graph DB
         
         my_graph = Graph() #create the graph
 
