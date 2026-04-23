@@ -1,11 +1,15 @@
 from rdflib import Graph, Literal, URIRef, RDF
 import urllib.request
 from pandas import read_csv
+import sqlite3   #I ADDED THE FOLLOWINGS
+from sqlite3 import connect
+import pandas as pd
+import json
 
 
 class UploadHandler():
     def __init__(self, dbPathorURL: str):
-        self.dbPathorURL = dbPathorURL
+        self.dbPathorURL = dbPathorURL   #PLEASE SEE MY PART OF CODE AND PROFESSOR SPECIFICATIONS!! MAYBE YPU HAVE TO CHANGE IN OTHER LINES TOO..
 
     def PushDatatoDB(self, path: str) -> bool:
         pass
@@ -106,6 +110,34 @@ class CitationUploadHandler(UploadHandler):
 
         return check
 
-uploadHandler = CitationUploadHandler("http://localhost:3030/mioprogetto/data")
+#uploadHandler = CitationUploadHandler("http://localhost:3030/mioprogetto/data")
 
-print(uploadHandler.PushDatatoDB("data/dh_citations.csv"))
+#print(uploadHandler.PushDatatoDB("data/dh_citations.csv"))
+
+class BibliographicEntityUploadHandler(UploadHandler):
+
+    def __init__(self, dbPathorURL: str):
+        super().__init__(dbPathorURL) #Recall the attribute dbPathorURL from the superclass
+
+    def PushDatatoDB(self, path: str) -> bool:
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                raw_data = json.load(f)
+
+            df = pd.json_normalize(raw_data)
+
+            df["internal_id"] = ["internal_" + str(i) for i in range(len(df))]
+            
+            bibliographic_entity = df[["internal_id", "title", "publication_date", "venue"]]
+            authors_table = df[["internal_id", "author"]].explode("author")
+            id_table = df[["internal_id", "id"]].explode("id")
+
+            db_path = self.getDbPathOrURL()  #THIS IS THE METHOD TO BE CHANGED (BY GEMINI'S THEORY)
+            with sqlite3.connect(db_path) as conn:
+                bibliographic_entity.to_sql("BibliographicEntity", conn, if_exists="replace", index="False") #NOT SURE IF I HAVE TO SPECIFY INDEX=FALSE
+                authors_table.to_sql("BibliographicEntity_Authors", conn, if_exists="replace", index="False")
+                id_table.to_sql("BibliographicEntity_ID", conn, if_exists="replace", index="False")
+            return True
+        except Exception as e:
+            print(f"Error during upload: {e}")
+            return False
