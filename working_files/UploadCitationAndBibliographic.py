@@ -8,8 +8,8 @@ import pandas as pd
 import json
 
 class Handler():
-    def __init__(self, dbPathOrUrl: str):
-        self.dbPathOrUrl = dbPathOrUrl
+    def __init__(self):
+        self.dbPathOrUrl = ""
     
     def getDbPathOrUrl(self):
         return self.dbPathOrUrl
@@ -24,6 +24,9 @@ class Handler():
 
 
 class UploadHandler(Handler):
+    def __init__(self):
+        super().__init__()
+    
     @abstractmethod
     def PushDatatoDB(self, path: str) -> bool:
         pass
@@ -31,6 +34,9 @@ class UploadHandler(Handler):
 
 # Class CitationUploadHandler that inherits from UploadHandler and implements the PushDatatoDB method to read a CSV file, create RDF triples, and upload them to a SPARQL endpoint.
 class CitationUploadHandler(UploadHandler):
+    def __init__(self):
+        super().__init__()
+
     def PushDatatoDB(self, path: str) -> bool: #Takes the path of a CSV in input, transform the data in RDF triple and push them to a graph DB
         self.base_url = "https://schema.org/" #Set a base_url for RDF on the constructor
         my_graph = Graph() #create the graph
@@ -119,6 +125,8 @@ class CitationUploadHandler(UploadHandler):
         return check
 
 class BibliographicEntityUploadHandler(UploadHandler):
+    def __init__(self):
+        super().__init__()
 
     def PushDatatoDB(self, path: str) -> bool:
         try:
