@@ -114,7 +114,6 @@ class CitationUploadHandler(UploadHandler):
             with urllib.request.urlopen(req) as response:
                 if response.status == 200:
                     check = True
-                    print("Data uploaded successfully.")
                 else:
                     print(f"Failed to upload data. Status code: {response.status}")
                     check = False
@@ -151,14 +150,3 @@ class BibliographicEntityUploadHandler(UploadHandler):
         except Exception as e:
             print(f"Error during upload: {e}")
             return False
-
-
-uploadCit = CitationUploadHandler()
-biblUpload = BibliographicEntityUploadHandler()
-
-uploadCit.setDbPathOrUrl("http://localhost:3030/mioprogetto/data")
-biblUpload.setDbPathOrUrl("data/try_sql.db")
-
-print(uploadCit.PushDatatoDB("data/dh_citations.csv"))
-
-print(biblUpload.PushDatatoDB("data/dh_metadata.json"))

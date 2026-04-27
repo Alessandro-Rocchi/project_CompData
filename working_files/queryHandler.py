@@ -1,4 +1,4 @@
-from UploadCitationAndBibliographic import CitationUploadHandler, BibliographicEntityUploadHandler, Handler
+from .UploadCitationAndBibliographic import Handler
 import sqlite3
 import pandas as pd
 
