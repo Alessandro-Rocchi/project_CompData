@@ -143,10 +143,12 @@ class BibliographicEntityUploadHandler(UploadHandler):
             db_path = self.getDbPathOrUrl()
 
             with sqlite3.connect(db_path) as conn:
-                bibliographic_entity.to_sql("BibliographicEntity", conn, if_exists="replace", index="False") #NOT SURE IF I HAVE TO SPECIFY INDEX=FALSE
-                authors_table.to_sql("BibliographicEntity_Authors", conn, if_exists="replace", index="False")
-                id_table.to_sql("BibliographicEntity_ID", conn, if_exists="replace", index="False")
+                bibliographic_entity.to_sql("BibliographicEntity", conn, if_exists="replace", index=False) #NOT SURE IF I HAVE TO SPECIFY INDEX=FALSE
+                authors_table.to_sql("BibliographicEntity_Authors", conn, if_exists="replace", index=False)
+                id_table.to_sql("BibliographicEntity_ID", conn, if_exists="replace", index=False)
             return True
         except Exception as e:
             print(f"Error during upload: {e}")
             return False
+        
+
