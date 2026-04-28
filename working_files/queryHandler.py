@@ -36,7 +36,7 @@ class BibliographicEntityQueryHandler(QueryHandler):
         with sqlite3.connect(self.getDbPathOrUrl()) as con:
             query = """
                 SELECT BibliographicEntity.* FROM BibliographicEntity 
-                JOIN BibliographicEntity_ID ON BibliographicEntity.internal_id = BibliographicEntity_ID.internal_id 
+                JOIN BibliographicEntity_ID ON BibliographicEntity.internal_id = BibliographicEntity_ID.internal_id
                 WHERE BibliographicEntity_ID.id = ?
             """
             return pd.read_sql(query, con, params=(id_string,))
