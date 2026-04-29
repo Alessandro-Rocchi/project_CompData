@@ -123,32 +123,31 @@ class CitationUploadHandler(UploadHandler):
 
         return check
 
-class BibliographicEntityUploadHandler(UploadHandler):
+class BibliographicEntityUploadHandler(UploadHandler): # BibliographicEntityUploadHandler inherits from UploadHandler and implements the method PushDataToDB that reads a .json file and creates the relational db (tables) for querying the db through SQL.
     def __init__(self):
         super().__init__()
 
-    def PushDatatoDB(self, path: str) -> bool:
-        try:
-            with open(path, "r", encoding="utf-8") as f:
-                raw_data = json.load(f)
+    def PushDatatoDB(self, path: str) -> bool: #Takes in input a path for a json file and creates a relational db
+        try: #Check if the file is not corrupted or missing. There should be an "except" block later.
+            with open(path, "r", encoding="utf-8") as f: #Open the file and close it automatically even if there are errors.
+                raw_data = json.load(f) #Transform the json file into a Python object (a list of dictionaries).
 
-            df = pd.json_normalize(raw_data)
+            df = pd.json_normalize(raw_data) #Create the DataFrame (if there are nested elements, this flattens them).
 
-            df["internal_id"] = ["internal_" + str(i) for i in range(len(df))]
+            df["internal_id"] = ["internal_" + str(i) for i in range(len(df))] #Create the internal ID
             
+            #Create the tables
             bibliographic_entity = df[["internal_id", "title", "pub_date", "venue"]]
             authors_table = df[["internal_id", "author"]].explode("author")
             id_table = df[["internal_id", "id"]].explode("id")
 
-            db_path = self.getDbPathOrUrl()
+            db_path = self.getDbPathOrUrl() #Save the path in order to retrieve it later.
 
-            with sqlite3.connect(db_path) as conn:
-                bibliographic_entity.to_sql("BibliographicEntity", conn, if_exists="replace", index=False) #NOT SURE IF I HAVE TO SPECIFY INDEX=FALSE
+            with sqlite3.connect(db_path) as conn: #The "with" closes the command even with errors. Open the SQLite database in db_path or create a new one if needed.
+                bibliographic_entity.to_sql("BibliographicEntity", conn, if_exists="replace", index=False) #Manage the tables in SQL
                 authors_table.to_sql("BibliographicEntity_Authors", conn, if_exists="replace", index=False)
                 id_table.to_sql("BibliographicEntity_ID", conn, if_exists="replace", index=False)
             return True
-        except Exception as e:
+        except Exception as e: #Check if there are any errors in the "try" block.
             print(f"Error during upload: {e}")
             return False
-        
-
