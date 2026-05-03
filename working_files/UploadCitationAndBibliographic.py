@@ -77,8 +77,8 @@ class CitationUploadHandler(UploadHandler):
         citations["cited"] = citations["cited"].str.strip()
         citations["creation"] = citations["creation"].str.strip()
         citations["timespan"] = citations["timespan"].str.strip()
-        citations["journal_sc"] = citations["journal_sc"].str.strip().str.lower() == "true"
-        citations["author_sc"] = citations["author_sc"].str.strip().str.lower() == "true"
+        citations["journal_sc"] = citations["journal_sc"].str.strip().str.lower() #to avoid syntax problem and to manage the boolean value in a better way, I transform the string in lowercase and I delete every blank space  
+        citations["author_sc"] = citations["author_sc"].str.strip().str.lower()
 
         citations_local_id = {}
 
@@ -94,10 +94,10 @@ class CitationUploadHandler(UploadHandler):
             my_graph.add((subj, creation, Literal(rows["creation"])))
             my_graph.add((subj, timespan, Literal(rows["timespan"])))
 
-            if rows["journal_sc"]: #define if a citation include a journal self citation
+            if rows["journal_sc"] == "yes": #define if a citation include a journal self citation
                 my_graph.add((subj, RDF.type, Journal_SC))
             
-            if rows["author_sc"]: #define if a citation include a author self citation
+            if rows["author_sc"] == "yes": #define if a citation include a author self citation
                 my_graph.add((subj, RDF.type, Author_SC))
         
         endpoint = self.getDbPathOrUrl() #set the endpoint using the method of the superclass

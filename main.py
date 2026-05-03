@@ -1,6 +1,6 @@
 from working_files.UploadCitationAndBibliographic import CitationUploadHandler, BibliographicEntityUploadHandler
 from working_files.queryHandler import BibliographicEntityQueryHandler
-import pprint
+
 
 def main():
     CitUp = CitationUploadHandler()
@@ -11,7 +11,6 @@ def main():
     BibUp.PushDatatoDB("data/dh_metadata.json")
 
     QBib = BibliographicEntityQueryHandler()
-    QBib.setDbPathOrUrl("data/try_sql.db")
     
     id = QBib.getById("omid:br/0604944107")
     print("By ID:")
