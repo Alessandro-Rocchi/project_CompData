@@ -1,5 +1,5 @@
 from working_files.UploadCitationAndBibliographic import CitationUploadHandler, BibliographicEntityUploadHandler
-from working_files.queryHandler import BibliographicEntityQueryHandler
+from working_files.queryHandler import BibliographicEntityQueryHandler, CitationQueryHandler
 
 
 def main():
@@ -9,6 +9,9 @@ def main():
     BibUp.setDbPathOrUrl("data/try_sql.db")
     CitUp.PushDatatoDB("data/dh_citations.csv")
     BibUp.PushDatatoDB("data/dh_metadata.json")
+    
+    QCit = CitationQueryHandler()
+    QCit.setDbPathOrUrl("http://172.20.10.2:9999/blazegraph/sparql")
     QBib = BibliographicEntityQueryHandler()
     QBib.setDbPathOrUrl("data/try_sql.db")
     
@@ -19,6 +22,20 @@ def main():
         print("The content of the row is as follows:")
         print(row)
     
+
+
+    # Test di getCitationsWithinTimespan con min_timespan e max_timespan entrambi specificati
+    # df = QCit.getCitationsWithinTimespan("P1Y", "P5Y")
+    # print(df)
+
+    # Test di getCitationsWithinDate con min_date e max_date entrambi specificati
+    # df = QCit.getCitationsWithinDate("2020", "2020")
+    # print(df[["citation_id", "creation", "timespan"]].head(30))
+    # print("Number of results:", len(df))
+
+
+
+
 
     #title = QBib.getBibliographicEntitiesWithTitle("Digital Cultural Strategies Within The Context Of Digital Humanities Economics")
     #print("\nBy Title:")
