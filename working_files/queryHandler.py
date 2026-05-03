@@ -11,19 +11,51 @@ class QueryHandler(Handler): # fatto da solo da Copilot
         pass
 
 class CitationQueryHandler(QueryHandler):
-    def __init__(self, dbPathorURL: str): # fatto da solo da Copilot
-        super().__init__(dbPathorURL)
+    def __init__(self):
+        super().__init__()
 
-    # fatto da solo da Copilot:
-    # def QueryDB(self, query: str) -> list:
-    #     # Here you would implement the logic to execute the SPARQL query against the graph database
-    #     # and return the results as a list. This is a placeholder implementation.
-    #     results = []  # This should be replaced with actual query results
-    #     return results
+    # Takes a SPARQL query as input and returns the result as a pandas DataFrame
+    def QueryDB(self, query: str) -> pd.DataFrame: 
+        return get(self.getDbPathOrUrl(), query, True)
+
+    # Returns all citations in the database
+    def getAllCitations(self) -> pd.DataFrame: 
+
+        # For every resource ?citation_id that is a citation, return: 
+        # the entity it cites from, the entity it cites, its creation date, and its timespan.
+        query = """
+            PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
+            PREFIX schema: <https://schema.org/> 
+
+            SELECT ?citation_id ?citing ?cited ?creation ?timespan 
+            WHERE {
+                ?citation_id rdf:type schema:citation .
+                ?citation_id schema:hasCitingEntity ?citing . 
+                ?citation_id schema:hasCitedEntity ?cited .
+                ?citation_id schema:creation ?creation .
+                ?citation_id schema:timespan ?timespan .
+            }
+        """
+    
+        return self.QueryDB(query)
+    
+    # # Returns all citations where the citing and cited entities share at least one author
+    # def getAllAuthorSelfCitations(self) -> pd.DataFrame: 
+
+    # SELECT ?id ?citing ?cited ?creation ?timespan
+    # WHERE {
+    #     ?id rdf:type schema:citation .
+    #     ?id rdf:type schema:author_sc .
+    #     ?id schema:hasCitingEntity ?citing .
+    #     ?id schema:hasCitedEntity ?cited .
+    #     ?id schema:creation ?creation .
+    #     ?id schema:timespan ?timespan .
+    # }
+    # """
+    
+    #     return self.QueryDB(query)
     
     # metodi da implementare per citazioni:
-    # getAllCitations()
-    # gelAllAuthorSelfCitations()
     # getAllJournalSelfCitations()
     # getCitationsWithinTimespan(min_timespan, max_timespan)
     # getCitationsWithinDate(start_date, end_date)

@@ -5,7 +5,7 @@ import pprint
 def main():
     CitUp = CitationUploadHandler()
     BibUp = BibliographicEntityUploadHandler()
-    CitUp.setDbPathOrUrl("http://localhost:3030/mioprogetto/data")
+    CitUp.setDbPathOrUrl("http://172.20.10.2:9999/blazegraph/sparql") # Current Blazegraph endpoint URL
     BibUp.setDbPathOrUrl("data/try_sql.db")
     CitUp.PushDatatoDB("data/dh_citations.csv")
     BibUp.PushDatatoDB("data/dh_metadata.json")
