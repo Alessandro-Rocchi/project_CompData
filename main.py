@@ -9,8 +9,8 @@ def main():
     BibUp.setDbPathOrUrl("data/try_sql.db")
     CitUp.PushDatatoDB("data/dh_citations.csv")
     BibUp.PushDatatoDB("data/dh_metadata.json")
-
     QBib = BibliographicEntityQueryHandler()
+    QBib.setDbPathOrUrl("data/try_sql.db")
     
     id = QBib.getById("omid:br/0604944107")
     print("By ID:")
