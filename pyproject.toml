@@ -8,5 +8,6 @@ dependencies = [
     "numpy>=2.4.3",
     "pandas>=3.0.1",
     "rdflib>=7.6.0",
+    "sparql-dataframe>=0.4",
     "sparqlite>=1.2.1",
 ]
