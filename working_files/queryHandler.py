@@ -144,7 +144,7 @@ class CitationQueryHandler(QueryHandler):
 
 
     # Returns all citations whose creation date falls within the specified range.
-    def getCitationsWithinDate(self, start_date: str = None, end_date: str = None) -> pd.DataFrame:
+    def getCitationsWithinDate(self, start_date: str, end_date: str) -> pd.DataFrame:
         filters = "" # Build the SPARQL FILTER clause based on the provided parameters
 
         #* Notes on SPARQL syntax:
