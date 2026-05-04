@@ -111,7 +111,7 @@ class CitationUploadHandler(UploadHandler):
         )
 
         try: # try the code to catch the Exception
-            with urllib.request.urlopen(req) as response:
+            with urllib.request.urlopen(req) as response: 
                 if response.status == 200:
                     check = True
                 else:

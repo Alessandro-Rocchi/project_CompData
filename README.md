@@ -5,20 +5,21 @@ To install the required dependencies and make everything work with uv, follow th
 1. Navigate through the folder you want to clone the github repository and open it in a terminal
 2. Use the following command:
 
-    ```
+    ```bash
     git clone https://github.com/Alessandro-Rocchi/project_CompData.git
     ```
+
 3. Check that the command clone everything from the repository
 4. Run the command:
 
-   ```
+   ```bash
    
    git pull
    ```
 
 5. Then run the command to install all dependencies needed:
 
-   ```
+   ```bash
    uv run main.py
    ```
 
