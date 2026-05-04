@@ -14,5 +14,5 @@ wheels/
 *.sqlite
 
 #data
-.csv
-.json
+*.csv
+*.json
