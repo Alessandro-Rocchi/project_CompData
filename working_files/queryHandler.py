@@ -87,7 +87,7 @@ class CitationQueryHandler(QueryHandler):
     
         return self.QueryDB(query)
     
-
+    #*** Da rivedere i timespan negativi per capire come gestirli al meglio.
     # Helper method to convert an ISO timespan string (e.g., "P2Y0M16D") into a tuple of integers (years, months, days).
     def _timespan_to_tuple(self, timespan: str) -> tuple: 
         timespan = str(timespan).strip() # Ensure timespan is a string and remove trailing whitespace
