@@ -272,3 +272,17 @@ class BibliographicEntityQueryHandler(QueryHandler):
         with sqlite3.connect(self.getDbPathOrUrl()) as con:
             query = "SELECT * FROM BibliographicEntity WHERE venue LIKE ?"
             return pd.read_sql(query, con, params=(f"%{venue_name}%",))
+        
+    def getAuthorsByInternalId(self, internal_id: str) -> pd.DataFrame:
+        with sqlite3.connect(self.getDbPathOrUrl()) as con:
+            query = "SELECT author FROM BibliographicEntity_Authors WHERE internal_id = ?"
+            return pd.read_sql(query, con, params=(internal_id,))
+        
+        #First Helper method
+
+    def getIdsByInternalId(self, internal_id: str) -> pd.DataFrame:
+        with sqlite3.connect(self.getDbPathOrUrl()) as con:
+            query = "SELECT id FROM BibliographicEntity_ID WHERE internal_id = ?"
+            return pd.read_sql(query, con, params=(internal_id,))
+        
+        #Second Helper method 
