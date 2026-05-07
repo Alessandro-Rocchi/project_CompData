@@ -27,12 +27,12 @@ class BasicQueryEngine:
         for handler in self.bibliographicEntityQuery: # you should loop through any database.
             df = handler.getById(id) # You are asking if in the relational database there is this id in a SQL table.
             if not df.empty: # if something is found, return it
-                return self.row_to_bibliographic_obj(df.iloc[0])
+                return self.row_to_bibliographic_obj(df.iloc[0]) # ".iloc[]" is Pandas-specific indexer. It concerns the position. It strips the table structure away from a row to convert it into a clean Python object.
         # Search in Citation Handlers (assuming an equivalent search exists)
         # Note: Your current CitationQueryHandler doesn't have a getById, 
         # but the BasicQueryEngine is designed to check all sources.
         for handler in self.citationQuery:
-            if hasattr(handler, 'getById'):
+            if hasattr(handler, 'getById'): # the name stands for "has attribute". It is a built-in function in Python that checks if an object has a specific property or method.
                 df = handler.getById(id)
                 if not df.empty:
                     return self.row_to_citation_obj(df.iloc[0])
