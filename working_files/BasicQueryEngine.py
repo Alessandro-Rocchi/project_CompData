@@ -15,7 +15,7 @@ class BasicQueryEngine:
         self.citationQuery = []
         return True
     
-    def cleanBibliographicEntityQuery(self) -> bool:
+    def cleanBibliographicEntityHandlers(self) -> bool:
         self.bibliographicEntityQuery = []
         return True
     
@@ -32,26 +32,39 @@ class BasicQueryEngine:
         # Note: Your current CitationQueryHandler doesn't have a getById, 
         # but the BasicQueryEngine is designed to check all sources.
         for handler in self.citationQuery:
-            if hasattr(handler, 'getById'): # the name stands for "has attribute". It is a built-in function in Python that checks if an object has a specific property or method.
-                df = handler.getById(id)
-                if not df.empty:
-                    return self.row_to_citation_obj(df.iloc[0])
+            df = handler.getById(id)
+            if not df.empty:
+                return self.row_to_citation_obj(df.iloc[0])
 
         return None # if nothing has been found, tell the user that the id doesn't exist.
     
     def row_to_bibliographic_obj(self, row):
-        # We use .get() to avoid KeyErrors if a column is missing
-        # We pass the internal_id or the primary ID to the constructor
-        b_entity = BibliographicEntity(ids=[row.get('internal_id', '')])
-        b_entity.title = row.get('title', "")
-        b_entity.publicationDate = row.get('pub_date', "")
-        b_entity.venue = row.get('venue', "")
-        # Note: Authors and extra IDs would require a second query 
-        # using the helper methods Member 1 wrote.
+        # Determine the specific class type
+        entity_type = row.get('type', '').lower()
+
+        # Map the correct type (Journal, Book, etc.)
+        if entity_type == "journal-article":
+            b_entity = JournalArticle(ids=[row.get("internal_id", "")])
+        elif entity_type == "book":
+            b_entity = Book(ids=[row.get("internal_id", "")])
+        else:
+            b_entity = BibliographicEntity(ids=[row.get("internal_id", "")])
+
+        b_entity.title = row.get("title", "")
+        b_entity.publicationDate = row.get("pub_date", "")
+        b_entity.venue = row.get("venue", "")
+
         return b_entity
     
-    def row_to_citation_obj(self, row, citation_type=Citation):
-        cit = citation_type(ids=[row.get('citation_id', '')])
+    def row_to_citation_obj(self, row):
+        cit_type = row.get('type', '')
+        if cit_type == 'journal-self':
+            cit = JournalSelfCitation(ids=[row.get('citation_id', '')])
+        elif cit_type == 'author-self':
+            cit = AuthorSelfCitation(ids=[row.get('citation_id', '')])
+        else:
+            cit = Citation(ids=[row.get('citation_id', '')])
+        
         cit.creation = row.get('creation', "")
         cit.timespan = row.get('timespan', "")
         return cit
