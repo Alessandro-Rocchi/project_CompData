@@ -1,3 +1,7 @@
+from queryHandler import BibliographicEntityQueryHandler
+from queryHandler import CitationQueryHandler
+from entityclasses import BibliographicEntity
+from entityclasses import Citation
 class BasicQueryEngine:
     def __init__(self):
         self.citationQuery = [] #list[CitationQueryHandler]. It will store all the objects in the graph database.
@@ -56,3 +60,140 @@ class BasicQueryEngine:
         cit.timespan = row.get('timespan', "")
         return cit
     
+    #getAllBibliographicEntities method 11
+    def getAllBibliographicEntities(self) -> list:
+        all_results = [] # 1. Final List
+        
+        # 2. Iteration on each handler of the list
+        for handler in self.bibliographicEntityQuery:
+            
+            # 3. Call the method to obtain the dataframe 
+            df = handler.getAllBibliographicEntities()
+            
+            # 4. Iteration on the rows of the dataframe
+            for index, row in df.iterrows():
+                internal_id = row["internal_id"]
+                
+                # 5. Helper methods to obtain the missing data
+                df_authors = handler.getAuthorsByInternalId(internal_id)
+                df_ids = handler.getIdsByInternalId(internal_id)
+                
+                # 6. Creation of the object BibliographicEntity
+                entity = BibliographicEntity()
+                
+                # 7. Filling the object with collected data
+                entity.title = row["title"]
+                entity.publicationDate = row["pub_date"]
+                entity.venue = row["venue"]
+                # Convert helper DataFrame columns to Python lists
+                entity.authors = df_authors["author"].tolist()
+                entity.ids = df_ids["id"].tolist()
+                
+                # 8. add the object to the final list
+                all_results.append(entity)
+                
+        # 9. Return final list 
+        return all_results
+    
+    #getBibliographicEntitiesWithTitle method 12
+    def getBibliographicEntitiesWithTitle(self, title: str) -> list:
+        all_results = [] 
+        
+        for handler in self.bibliographicEntityQuery:
+            
+            df = handler.getBibliographicEntitiesWithTitle(title)
+            
+            for index, row in df.iterrows():
+                internal_id = row["internal_id"]
+                
+                df_authors = handler.getAuthorsByInternalId(internal_id)
+                df_ids = handler.getIdsByInternalId(internal_id)
+            
+                entity = BibliographicEntity()
+                
+                entity.title = row["title"]
+                entity.publicationDate = row["pub_date"]
+                entity.venue = row["venue"]
+                entity.authors = df_authors["author"].tolist()
+                entity.ids = df_ids["id"].tolist()
+                
+                all_results.append(entity)
+                
+        return all_results
+    
+    #getBibliographicEntitiesWithAuthor method 13
+    def getBibliographicEntitiesWithAuthor(self, author: str) -> list:
+        all_results = [] 
+        
+        for handler in self.bibliographicEntityQuery:
+            
+            df = handler.getBibliographicEntitiesWithAuthor(author)
+            
+            for index, row in df.iterrows():
+                internal_id = row["internal_id"]
+                
+                df_authors = handler.getAuthorsByInternalId(internal_id)
+                df_ids = handler.getIdsByInternalId(internal_id)
+                
+                entity = BibliographicEntity()
+                
+                entity.title = row["title"]
+                entity.publicationDate = row["pub_date"]
+                entity.venue = row["venue"]
+                entity.authors = df_authors["author"].tolist()
+                entity.ids = df_ids["id"].tolist()
+                
+                all_results.append(entity)
+                
+        return all_results
+    
+    #getBibliographicEntitiesWithinDate method 14
+    def getBibliographicEntitiesWithinDate(self, start_date: str = None, end_date: str = None) -> list:
+        all_results = []
+
+        for handler in self.bibliographicEntityQuery:
+            
+            df = handler.getBibliographicEntitiesWithinPublicationDate(start_date, end_date)
+        
+            for index, row in df.iterrows():
+               internal_id = row["internal_id"]
+               df_authors = handler.getAuthorsByInternalId(internal_id)
+               df_ids = handler.getIdsByInternalId(internal_id)
+            
+               entity = BibliographicEntity()
+               entity.title = row["title"]
+               entity.publicationDate = row["pub_date"]
+               entity.venue = row["venue"]
+               entity.authors = df_authors["author"].tolist()
+               entity.ids = df_ids["id"].tolist()
+
+               all_results.append(entity)
+            
+        return all_results
+    
+    #getBibliographicEntitiesWithVenue method 15
+    def getBibliographicEntitiesWithVenue(self, venue: str) -> list:
+        all_results = [] 
+        
+        for handler in self.bibliographicEntityQuery:
+            
+            df = handler.getBibliographicEntitiesWithVenue(venue)
+            
+            for index, row in df.iterrows():
+                internal_id = row["internal_id"]
+                
+                df_authors = handler.getAuthorsByInternalId(internal_id)
+                df_ids = handler.getIdsByInternalId(internal_id)
+                
+                entity = BibliographicEntity()
+                
+                entity.title = row["title"]
+                entity.publicationDate = row["pub_date"]
+                entity.venue = row["venue"]
+                entity.authors = df_authors["author"].tolist()
+                entity.ids = df_ids["id"].tolist()
+                
+                all_results.append(entity)
+                
+        return all_results
+
