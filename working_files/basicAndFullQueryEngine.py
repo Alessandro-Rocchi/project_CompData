@@ -1,7 +1,8 @@
 from queryHandler import BibliographicEntityQueryHandler
 from queryHandler import CitationQueryHandler
-from entityclasses import BibliographicEntity
-from entityclasses import Citation
+from entityClasses import BibliographicEntity
+from entityClasses import *
+
 class BasicQueryEngine:
     def __init__(self):
         self.citationQuery = [] #list[CitationQueryHandler]. It will store all the objects in the graph database.
@@ -209,4 +210,40 @@ class BasicQueryEngine:
                 all_results.append(entity)
                 
         return all_results
+
+class FullQueryEngine(BasicQueryEngine):
+    def __init__(self):
+        super().__init__()
+    
+    def getAuthorSelfCitationByName(self, author_name: str) -> list[AuthorSelfCitation]:
+        result = []
+        citation_list = self.getAllAuthorSelfCitation()
+        for entity in citation_list:
+            if (author_name in entity.getCitingEntity().getAuthors()) and (author_name in entity.getCitedEntity().getAuthors()):
+                result.append(entity)
+        return result
+    
+    def getJournalSelfCitationByName(self, journal_name: str) -> list[JournalSelfCitation]:
+        result = []
+        citation_list = self.getAllJournalSelfCitation()
+        for entity in citation_list:
+            if (journal_name == entity.getCitingEntity().getVenue()) and (journal_name == entity.getCitedEntity().getVenue()):
+                result.append(entity)
+        return result
+    
+    def getCitationsOfBibEntityByTitleWithinDate(self, bib_entity_title: str, min_date: str, max_date: str) -> list[Citation]:
+        result = []
+        citation_list = self.getCitationscEntitiesWithinDate(min_date, max_date)
+        for entity in citation_list:
+            if bib_entity_title in entity.getCitedEntity().getTitle():
+                result.append(entity)
+        return result
+    
+    def getReferencesOfBibEntityByTitleWithinTimespan(self, bib_entity_title: str, min_timespan: str, max_timespan: str) -> list[Citation]:
+        result = []
+        citation_list = self.getCitationscEntitiesWithinTimespan(min_timespan, max_timespan)
+        for entity in citation_list:
+            if bib_entity_title in entity.getCitingEntity().getTitle():
+                result.append(entity)
+        return result
 

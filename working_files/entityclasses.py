@@ -49,9 +49,9 @@ class Citation(IdentifiableEntity):
         return citedEntity
 
 class JournalSelfCitation(Citation):
-    def __init__(self, ids):
-        super().__init__(ids)
+    def __init__(self):
+        super().__init__()
 
 class AuthorSelfCitation(Citation):
-    def __init__(self, ids):
-        super().__init__(ids)
+    def __init__(self):
+        super().__init__()

@@ -1,4 +1,4 @@
-from .UploadCitationAndBibliographic import Handler
+from uploadCitationAndBibliographic import Handler
 from sparql_dataframe import get
 import sqlite3
 import pandas as pd

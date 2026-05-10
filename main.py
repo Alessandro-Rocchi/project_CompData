@@ -1,4 +1,4 @@
-from working_files.UploadCitationAndBibliographic import CitationUploadHandler, BibliographicEntityUploadHandler
+from working_files.uploadCitationAndBibliographic import CitationUploadHandler, BibliographicEntityUploadHandler
 from working_files.queryHandler import BibliographicEntityQueryHandler, CitationQueryHandler
 
 
@@ -21,8 +21,6 @@ def main():
         print("\nThe index of the current row is", idx)
         print("The content of the row is as follows:")
         print(row)
-    
-
 
     # Test di getCitationsWithinTimespan con min_timespan e max_timespan entrambi specificati
     # df = QCit.getCitationsWithinTimespan("P1Y", "P5Y")
@@ -32,10 +30,6 @@ def main():
     # df = QCit.getCitationsWithinDate("2020", "2020")
     # print(df[["citation_id", "creation", "timespan"]].head(30))
     # print("Number of results:", len(df))
-
-
-
-
 
     #title = QBib.getBibliographicEntitiesWithTitle("Digital Cultural Strategies Within The Context Of Digital Humanities Economics")
     #print("\nBy Title:")
