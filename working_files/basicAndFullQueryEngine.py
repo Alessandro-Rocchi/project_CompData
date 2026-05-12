@@ -1,7 +1,7 @@
-from queryHandler import BibliographicEntityQueryHandler
-from queryHandler import CitationQueryHandler
-from entityClasses import BibliographicEntity
-from entityClasses import *
+from .queryHandler import BibliographicEntityQueryHandler
+from .queryHandler import CitationQueryHandler
+from .entityClasses import BibliographicEntity
+from .entityClasses import *
 
 class BasicQueryEngine:
     def __init__(self):
@@ -42,7 +42,7 @@ class BasicQueryEngine:
                 return self.row_to_citation_obj(df.iloc[0])
 
         return None # if nothing has been found, tell the user that the id doesn't exist.
-    
+    #
     def row_to_bibliographic_obj(self, row):
         # Determine the specific class type
         entity_type = row.get('type', '').lower()

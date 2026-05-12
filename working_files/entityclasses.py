@@ -6,10 +6,8 @@ class IdentifiableEntity:
         return self.ids
 
 class BibliographicEntity(IdentifiableEntity):
-    def __init__(self, ids):
-        
-        super().__init__(ids)
-        
+    def __init__(self):
+        super().__init__()
         self.title = ""
         self.authors = []
         self.publicationDate = ""
@@ -29,8 +27,8 @@ class BibliographicEntity(IdentifiableEntity):
     
 
 class Citation(IdentifiableEntity):
-    def __init__(self, ids):
-        super().__init__(ids)
+    def __init__(self):
+        super().__init__()
         self.creation = ""
         self.timespan = ""
 
