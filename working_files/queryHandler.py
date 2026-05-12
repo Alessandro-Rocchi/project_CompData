@@ -3,18 +3,19 @@ from sparql_dataframe import get
 import sqlite3
 import pandas as pd
 
-
 class QueryHandler(Handler): 
     def __init__(self):
         super().__init__()
-
+    #FIXME: Rimuovere il metodo QueryDb poiché non presente nell'UML
     def QueryDB(self, query: str) -> list:
         pass
+    #TODO Aggiungere metodo getById(id: str) -> pd.DataFrame oppure Renderlo un metodo abstracto in QueryHandler e usarlo implementato in modi diversi
 
 class CitationQueryHandler(QueryHandler):
     def __init__(self):
         super().__init__()
 
+    #* Qui QueryDB può rimanere
     # Takes a SPARQL query as input and returns the result as a pandas DataFrame
     def QueryDB(self, query: str) -> pd.DataFrame: 
         return get(self.getDbPathOrUrl(), query, True)
@@ -228,6 +229,7 @@ class BibliographicEntityQueryHandler(QueryHandler):
     def __init__(self):
         super().__init__()
 
+    #FIXME: Rimuovere il metodo getById e inserirlo nel QueryHandler come metodo comune a tutte e due le classi, visto che è un metodo di base che potrebbe essere utile per entrambe.
     def getById(self, id_string: str) -> pd.DataFrame:
         
         with sqlite3.connect(self.getDbPathOrUrl()) as con:
