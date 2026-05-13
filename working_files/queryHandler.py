@@ -17,6 +17,7 @@ class CitationQueryHandler(QueryHandler):
         super().__init__()
 
     # Takes a SPARQL query as input and returns the result as a pandas DataFrame
+    # ex QueryDB, changed name and made it private since it's a helper method 
     def _runSparqlQuery(self, query: str) -> pd.DataFrame: 
         return get(self.getDbPathOrUrl(), query, True)
     
