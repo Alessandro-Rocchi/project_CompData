@@ -41,7 +41,7 @@ class BasicQueryEngine:
             if not df.empty:
                 return self._row_to_citation_obj(df.iloc[0])
 
-        return None # if nothing has been found, tell the user that the id doesn't exist. #FIXME 
+        return None # if nothing has been found, tell the user that the id doesn't exist.
     
     def _row_to_bibliographic_obj(self, row):
         # Determine the specific class type
@@ -60,9 +60,6 @@ class BasicQueryEngine:
         b_entity.venue = row.get("venue", "")
 
         return b_entity
-
-
-    #TODO: they should be ok but check again all citation-related methods. 
 
     # Helper method to convert a DataFrame row into a Citation object.
     def _row_to_citation_obj(self, row, citation_class=Citation) -> Citation: 

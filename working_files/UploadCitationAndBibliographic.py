@@ -1,6 +1,6 @@
 from rdflib import Graph, Literal, URIRef, RDF
 import urllib.request
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from pandas import read_csv
 import sqlite3   #I ADDED THE FOLLOWINGS
 from sqlite3 import connect
