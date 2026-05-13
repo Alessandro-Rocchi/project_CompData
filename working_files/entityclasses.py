@@ -29,22 +29,24 @@ class BibliographicEntity(IdentifiableEntity):
     
 
 class Citation(IdentifiableEntity):
-    def __init__(self, ids):
-        super().__init__(ids)
+    def __init__(self):
+        super().__init__()
         self.creation = ""
         self.timespan = ""
+        self.citingEntity = None # Ho aggiunto queste due
+        self.citedEntity = None
 
     def getCreation(self) -> str:
         return self.creation
     
-    def getTimepasn(self) -> str:
+    def getTimespan(self) -> str: # Spelling
         return self.timespan
     
     def getCitingEntity(self) -> BibliographicEntity:
         citingEntity = BibliographicEntity()
         return citingEntity
     
-    def getCitingEntity(self) -> BibliographicEntity:
+    def getCitedEntity(self) -> BibliographicEntity: # C'era scritto due volte "Citing"
         citedEntity = BibliographicEntity()
         return citedEntity
 

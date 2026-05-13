@@ -30,48 +30,15 @@ class BasicQueryEngine:
         """
         for handler in self.bibliographicEntityQuery: # you should loop through any database.
             df = handler.getById(id) # You are asking if in the relational database there is this id in a SQL table.
-            if not df.empty: # if something is found, return it
-                return self.row_to_bibliographic_obj(df.iloc[0]) # ".iloc[]" is Pandas-specific indexer. It concerns the position. It strips the table structure away from a row to convert it into a clean Python object.
+            if df is not None and not df.empty: # if something is found, return it
+                return self.getAllBibliographicEntities()
         # Search in Citation Handlers (assuming an equivalent search exists)
-        # Note: Your current CitationQueryHandler doesn't have a getById, 
-        # but the BasicQueryEngine is designed to check all sources.
         for handler in self.citationQuery:
             df = handler.getById(id)
-            if not df.empty:
-                return self.row_to_citation_obj(df.iloc[0])
+            if df is not None and not df.empty:
+                return self.getAllCitations() # Still to be implemented
 
         return None # if nothing has been found, tell the user that the id doesn't exist.
-    
-    def row_to_bibliographic_obj(self, row):
-        # Determine the specific class type
-        entity_type = row.get('type', '').lower()
-
-        # Map the correct type (Journal, Book, etc.)
-        if entity_type == "journal-article":
-            b_entity = JournalArticle(ids=[row.get("internal_id", "")])
-        elif entity_type == "book":
-            b_entity = Book(ids=[row.get("internal_id", "")])
-        else:
-            b_entity = BibliographicEntity(ids=[row.get("internal_id", "")])
-
-        b_entity.title = row.get("title", "")
-        b_entity.publicationDate = row.get("pub_date", "")
-        b_entity.venue = row.get("venue", "")
-
-        return b_entity
-    
-    def row_to_citation_obj(self, row):
-        cit_type = row.get('type', '')
-        if cit_type == 'journal-self':
-            cit = JournalSelfCitation(ids=[row.get('citation_id', '')])
-        elif cit_type == 'author-self':
-            cit = AuthorSelfCitation(ids=[row.get('citation_id', '')])
-        else:
-            cit = Citation(ids=[row.get('citation_id', '')])
-        
-        cit.creation = row.get('creation', "")
-        cit.timespan = row.get('timespan', "")
-        return cit
     
     #getAllBibliographicEntities method 11
     def getAllBibliographicEntities(self) -> list:
@@ -209,4 +176,43 @@ class BasicQueryEngine:
                 all_results.append(entity)
                 
         return all_results
+    
+    
+    # def row_to_bibliographic_obj(self, row, handler) -> BibliographicEntity:
+    #     # helper that creates specific Bibliographic objects and fetch related IDs/authors
+    #     internal_id = row["internal_id"]
+    #     entity_type = str(row.get('type', '')).lower()
 
+    #     # Map the correct type (Journal, Book, etc.)
+    #     if "journal" in entity_type:
+    #         entity = JournalArticle()
+    #     elif "book" in entity_type:
+    #         entity = Book()
+    #     else:
+    #         entity = BibliographicEntity()
+
+    #     entity.title = row.get("title", "")
+    #     entity.publicationDate = row.get("pub_date", "")
+    #     entity.venue = row.get("venue", "")
+
+    #     # Fetch external IDs and authors from the handler that found this record
+    #     entity.ids = getIdsByInternalId(internal_id)["id"].tolist()
+    #     entity.authors = handler.getAuthorsByInternalId(internal_id)["author"].tolist()
+
+    #     return entity
+    
+    # def row_to_citation_obj(self, row) -> Citation:
+    #     cit_type = str(row.get('type', '')).lower()
+
+    #     if "journal" in cit_type:
+    #         cit = JournalSelfCitation()
+    #     elif "author" in cit_type:
+    #         cit = AuthorSelfCitation()
+    #     else:
+    #         cit = Citation()
+        
+    #     # Mapping IDs and attributes (ADJUST KEYS BASED ON OUR DB SCHEMA)
+    #     cit.ids = [row.get("citation_id", "")]
+    #     cit.creation = row.get('creation', "")
+    #     cit.timespan = row.get('timespan', "")
+    #     return cit

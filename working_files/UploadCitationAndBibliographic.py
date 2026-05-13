@@ -28,7 +28,7 @@ class UploadHandler(Handler):
         super().__init__()
     
     @abstractmethod
-    def PushDatatoDB(self, path: str) -> bool:
+    def pushDataToDb(self, path: str) -> bool:
         pass
     
 
@@ -37,7 +37,7 @@ class CitationUploadHandler(UploadHandler):
     def __init__(self):
         super().__init__()
 
-    def PushDatatoDB(self, path: str) -> bool: #Takes the path of a CSV in input, transform the data in RDF triple and push them to a graph DB
+    def pushDataToDb(self, path: str) -> bool: #Takes the path of a CSV in input, transform the data in RDF triple and push them to a graph DB
         self.base_url = "https://schema.org/" #Set a base_url for RDF on the constructor
         my_graph = Graph() #create the graph
 
@@ -127,7 +127,7 @@ class BibliographicEntityUploadHandler(UploadHandler): # BibliographicEntityUplo
     def __init__(self):
         super().__init__()
 
-    def PushDatatoDB(self, path: str) -> bool: #Takes in input a path for a json file and creates a relational db
+    def pushDataToDb(self, path: str) -> bool: #Takes in input a path for a json file and creates a relational db
         try: #Check if the file is not corrupted or missing. There should be an "except" block later.
             with open(path, "r", encoding="utf-8") as f: #Open the file and close it automatically even if there are errors.
                 raw_data = json.load(f) #Transform the json file into a Python object (a list of dictionaries).
