@@ -18,5 +18,6 @@ def main():
     q1.addBibliographicEntityHandler(QBib)
     q_list = q1.getBibliographicEntitiesWithinDate("2018-08-01", "2018-08-31")
     print(q_list[0].title)
+    
 if __name__ == "__main__":
     main()

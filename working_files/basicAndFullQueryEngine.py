@@ -42,7 +42,7 @@ class BasicQueryEngine:
                 return self.row_to_citation_obj(df.iloc[0])
 
         return None # if nothing has been found, tell the user that the id doesn't exist.
-    #
+    
     def row_to_bibliographic_obj(self, row):
         # Determine the specific class type
         entity_type = row.get('type', '').lower()
@@ -61,7 +61,7 @@ class BasicQueryEngine:
 
         return b_entity
     
-    def row_to_citation_obj(self, row):
+    def row_to_citation_obj(self, row): 
         cit_type = row.get('type', '')
         if cit_type == 'journal-self':
             cit = JournalSelfCitation(ids=[row.get('citation_id', '')])

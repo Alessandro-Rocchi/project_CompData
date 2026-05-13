@@ -35,14 +35,14 @@ class Citation(IdentifiableEntity):
     def getCreation(self) -> str:
         return self.creation
     
-    def getTimepasn(self) -> str:
+    def getTimespan(self) -> str:
         return self.timespan
     
     def getCitingEntity(self) -> BibliographicEntity:
         citingEntity = BibliographicEntity()
         return citingEntity
     
-    def getCitingEntity(self) -> BibliographicEntity:
+    def getCitedEntity(self) -> BibliographicEntity:
         citedEntity = BibliographicEntity()
         return citedEntity
 
