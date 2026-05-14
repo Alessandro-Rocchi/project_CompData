@@ -1,7 +1,8 @@
-from queryHandler import BibliographicEntityQueryHandler
-from queryHandler import CitationQueryHandler
-from entityclasses import BibliographicEntity
-from entityclasses import Citation
+from .queryHandler import BibliographicEntityQueryHandler
+from .queryHandler import CitationQueryHandler
+from .entityClasses import BibliographicEntity
+from .entityClasses import *
+
 class BasicQueryEngine:
     def __init__(self):
         self.citationQuery = [] #list[CitationQueryHandler]. It will store all the objects in the graph database.
@@ -32,14 +33,162 @@ class BasicQueryEngine:
             df = handler.getById(id) # You are asking if in the relational database there is this id in a SQL table.
             if df is not None and not df.empty: # if something is found, return it
                 return self.getAllBibliographicEntities()
+            if not df.empty: # if something is found, return it
+                return self._row_to_bibliographic_obj(df.iloc[0]) # ".iloc[]" is Pandas-specific indexer. It concerns the position. It strips the table structure away from a row to convert it into a clean Python object.
+        
         # Search in Citation Handlers (assuming an equivalent search exists)
         for handler in self.citationQuery:
             df = handler.getById(id)
+<<<<<<< HEAD:working_files/BasicQueryEngine.py
             if df is not None and not df.empty:
                 return self.getAllCitations() # Still to be implemented
 
         return None # if nothing has been found, tell the user that the id doesn't exist.
     
+=======
+            if not df.empty:
+                return self._row_to_citation_obj(df.iloc[0])
+
+        return None # if nothing has been found, tell the user that the id doesn't exist.
+    
+    def _row_to_bibliographic_obj(self, row):
+        # Determine the specific class type
+        entity_type = row.get('type', '').lower()
+
+        # Map the correct type (Journal, Book, etc.)
+        if entity_type == "journal-article":
+            b_entity = JournalArticle(ids=[row.get("internal_id", "")])
+        elif entity_type == "book":
+            b_entity = Book(ids=[row.get("internal_id", "")])
+        else:
+            b_entity = BibliographicEntity(ids=[row.get("internal_id", "")])
+
+        b_entity.title = row.get("title", "")
+        b_entity.publicationDate = row.get("pub_date", "")
+        b_entity.venue = row.get("venue", "")
+
+        return b_entity
+
+
+    #TODO: they should be ok but check again all citation-related methods. 
+
+    # Helper method to convert a DataFrame row into a Citation object.
+    def _row_to_citation_obj(self, row, citation_class=Citation): 
+        
+        #* Previous version
+        # ids are not stored in the same way in the relational and graph database
+        # Dataframe doesn't have a 'type' column
+        """ cit_type = row.get('type', '')
+        if cit_type == 'journal-self':
+            cit = JournalSelfCitation(ids=[row.get('citation_id', '')])
+        elif cit_type == 'author-self':
+            cit = AuthorSelfCitation(ids=[row.get('citation_id', '')])
+        else:
+            cit = Citation(ids=[row.get('citation_id', '')])
+        
+        cit.creation = row.get('creation', "")
+        cit.timespan = row.get('timespan', "")
+        return cit """ 
+
+        #* Proposed version with the optional parameter to specify the citation class type. 
+        # citation_class is an optional parameter that allows you to specify the type of Citation. 
+        # By default, it will create a generic Citation object.
+        citation = citation_class()
+
+        citation.ids = [row.get("citation_id", "")]
+        citation.creation = row.get("creation", "")
+        citation.timespan = row.get("timespan", "")
+        citation.citingEntityId = row.get("citing", "")
+        citation.citedEntityId = row.get("cited", "")
+
+        return citation
+    
+
+    # Returns a list of Citation objects containing all citations retrieved from all citation query handlers.
+    def getAllCitations(self) -> list[Citation]:
+        all_results = [] # List to store all Citation objects retrieved from all handlers.
+
+        # Iterate over all citation query handlers connected to this engine.
+        for handler in self.citationQuery:
+            df = handler.getAllCitations() # Ask current handler for all citations as a DataFrame.
+
+            # Convert each DataFrame row into a Citation object.
+            for index, row in df.iterrows(): 
+                citation = self._row_to_citation_obj(row, Citation)
+                all_results.append(citation)
+
+        return all_results 
+
+
+    # Returns a list of AuthorSelfCitation objects containing all author self-citations retrieved from all citation query handlers.
+    def getAllAuthorSelfCitations(self) -> list[AuthorSelfCitation]:
+        all_results = [] # List to store all AuthorSelfCitation objects retrieved from all handlers.
+
+        # Iterate over all citation query handlers connected to this engine.
+        for handler in self.citationQuery:
+            df = handler.getAllAuthorSelfCitations() # Ask current handler for all author self-citations as a DataFrame.
+
+            # Convert each DataFrame row into an AuthorSelfCitation object.
+            for index, row in df.iterrows():
+                citation = self._row_to_citation_obj(row, AuthorSelfCitation)
+                all_results.append(citation)
+
+        return all_results
+
+
+    # Returns a list of JournalSelfCitation objects containing all journal self-citations retrieved from all citation query handlers.
+    def getAllJournalSelfCitations(self) -> list[JournalSelfCitation]:
+        all_results = [] # List to store all JournalSelfCitation objects retrieved from all handlers.
+
+        # Iterate over all citation query handlers connected to this engine.
+        for handler in self.citationQuery:
+            df = handler.getAllJournalSelfCitations() # Ask the current handler for all journal self-citations as a DataFrame.
+
+            # Convert each DataFrame row into a JournalSelfCitation object.
+            for index, row in df.iterrows():
+                citation = self._row_to_citation_obj(row, JournalSelfCitation)
+                all_results.append(citation)
+
+        return all_results
+
+
+    # Returns a list of Citation objects whose timespan falls within the specified range.
+    def getCitationsWithinTimespan(self, min_timespan: str = None, max_timespan: str = None) -> list[Citation]:
+        all_results = [] # List to store all Citation objects retrieved from all handlers that fall within the specified timespan range.
+
+        # Iterate over all citation query handlers connected to this engine.
+        for handler in self.citationQuery:
+            df = handler.getCitationsWithinTimespan(min_timespan, max_timespan) # Ask the current handler for citations within the requested timespan range.
+
+            # Convert each DataFrame row into a Citation object.
+            for index, row in df.iterrows():
+                citation = self._row_to_citation_obj(row, Citation)
+                all_results.append(citation)
+
+        return all_results
+
+
+    # Returns a list of Citation objects whose creation date falls within the specified range.
+    def getCitationsWithinDate(self, start_date: str = None, end_date: str = None) -> list[Citation]:
+        all_results = [] # List to store all Citation objects retrieved from all handlers that fall within the specified date range.
+
+        # Iterate over all citation query handlers connected to this engine.
+        for handler in self.citationQuery:
+            df = handler.getCitationsWithinDate(start_date, end_date) # Ask the current handler for citations within the requested date range.
+
+            # Convert each DataFrame row into a Citation object.
+            for index, row in df.iterrows():
+                citation = self._row_to_citation_obj(row, Citation)
+                all_results.append(citation)
+
+        return all_results
+
+
+
+
+
+
+>>>>>>> 1d02f119ac64c803e03c542a64f6d633a5a1b0f5:working_files/basicAndFullQueryEngine.py
     #getAllBibliographicEntities method 11
     def getAllBibliographicEntities(self) -> list:
         all_results = [] # 1. Final List
@@ -183,6 +332,7 @@ class BasicQueryEngine:
     #     internal_id = row["internal_id"]
     #     entity_type = str(row.get('type', '')).lower()
 
+<<<<<<< HEAD:working_files/BasicQueryEngine.py
     #     # Map the correct type (Journal, Book, etc.)
     #     if "journal" in entity_type:
     #         entity = JournalArticle()
@@ -216,3 +366,44 @@ class BasicQueryEngine:
     #     cit.creation = row.get('creation', "")
     #     cit.timespan = row.get('timespan', "")
     #     return cit
+=======
+
+
+
+class FullQueryEngine(BasicQueryEngine):
+    def __init__(self):
+        super().__init__()
+    
+    def getAuthorSelfCitationByName(self, author_name: str) -> list[AuthorSelfCitation]:
+        result = []
+        citation_list = self.getAllAuthorSelfCitation()
+        for entity in citation_list:
+            if (author_name in entity.getCitingEntity().getAuthors()) and (author_name in entity.getCitedEntity().getAuthors()):
+                result.append(entity)
+        return result
+    
+    def getJournalSelfCitationByName(self, journal_name: str) -> list[JournalSelfCitation]:
+        result = []
+        citation_list = self.getAllJournalSelfCitation()
+        for entity in citation_list:
+            if (journal_name == entity.getCitingEntity().getVenue()) and (journal_name == entity.getCitedEntity().getVenue()):
+                result.append(entity)
+        return result
+    
+    def getCitationsOfBibEntityByTitleWithinDate(self, bib_entity_title: str, min_date: str, max_date: str) -> list[Citation]:
+        result = []
+        citation_list = self.getCitationscEntitiesWithinDate(min_date, max_date)
+        for entity in citation_list:
+            if bib_entity_title in entity.getCitedEntity().getTitle():
+                result.append(entity)
+        return result
+    
+    def getReferencesOfBibEntityByTitleWithinTimespan(self, bib_entity_title: str, min_timespan: str, max_timespan: str) -> list[Citation]:
+        result = []
+        citation_list = self.getCitationscEntitiesWithinTimespan(min_timespan, max_timespan)
+        for entity in citation_list:
+            if bib_entity_title in entity.getCitingEntity().getTitle():
+                result.append(entity)
+        return result
+
+>>>>>>> 1d02f119ac64c803e03c542a64f6d633a5a1b0f5:working_files/basicAndFullQueryEngine.py

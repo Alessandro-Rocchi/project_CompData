@@ -1,14 +1,15 @@
-from .UploadCitationAndBibliographic import Handler
+from .uploadCitationAndBibliographic import Handler
 from sparql_dataframe import get
 import sqlite3
 import pandas as pd
+from abc import ABC, abstractmethod
 
-
-class QueryHandler(Handler): 
+class QueryHandler(Handler, ABC): 
     def __init__(self):
         super().__init__()
 
-    def QueryDB(self, query: str) -> list:
+    @abstractmethod
+    def getById(self, id: str) -> pd.DataFrame:
         pass
 
 class CitationQueryHandler(QueryHandler):
@@ -16,8 +17,37 @@ class CitationQueryHandler(QueryHandler):
         super().__init__()
 
     # Takes a SPARQL query as input and returns the result as a pandas DataFrame
-    def QueryDB(self, query: str) -> pd.DataFrame: 
+    # ex QueryDB, changed name and made it private since it's a helper method 
+    def _runSparqlQuery(self, query: str) -> pd.DataFrame: 
         return get(self.getDbPathOrUrl(), query, True)
+    
+    # Returns the citation with the specified ID
+    def getById(self, id_string: str) -> pd.DataFrame:
+
+        # Use id_string if it's a full URI; if not construct the full URI.
+        if id_string.startswith("http://") or id_string.startswith("https://"):
+            citation_uri = id_string
+        else:
+            citation_uri = "https://schema.org/" + id_string
+
+
+        # For the resource with the specified URI, return:
+        # its citing entity, cited entity, creation date, and timespan.
+        query = f"""
+            PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
+            PREFIX schema: <https://schema.org/> 
+
+            SELECT ?citation_id ?citing ?cited ?creation ?timespan 
+            WHERE {{
+                ?citation_id rdf:type schema:citation .
+                ?citation_id schema:hasCitingEntity ?citing . 
+                ?citation_id schema:hasCitedEntity ?cited .
+                ?citation_id schema:creation ?creation .
+                ?citation_id schema:timespan ?timespan .
+                FILTER(?citation_id = <{citation_uri}>)
+            }}
+        """
+        return self._runSparqlQuery(query)
 
 
     # Returns all citations in the database
@@ -39,7 +69,7 @@ class CitationQueryHandler(QueryHandler):
             }
         """
     
-        return self.QueryDB(query)
+        return self._runSparqlQuery(query)
     
 
     # Returns all citations where the citing and cited entities share at least one author
@@ -62,7 +92,7 @@ class CitationQueryHandler(QueryHandler):
             }
         """
     
-        return self.QueryDB(query)
+        return self._runSparqlQuery(query)
     
 
     # Returns all citations where the citing and cited entities are published in the same journal
@@ -85,7 +115,7 @@ class CitationQueryHandler(QueryHandler):
             }
         """
     
-        return self.QueryDB(query)
+        return self._runSparqlQuery(query)
     
     #*** Da rivedere i timespan negativi per capire come gestirli al meglio.
     # Helper method to convert an ISO timespan string (e.g., "P2Y0M16D") into a tuple of integers (years, months, days).
@@ -219,7 +249,7 @@ class CitationQueryHandler(QueryHandler):
             }}
         """
     
-        return self.QueryDB(query)
+        return self._runSparqlQuery(query)
 
     
 
@@ -228,6 +258,7 @@ class BibliographicEntityQueryHandler(QueryHandler):
     def __init__(self):
         super().__init__()
 
+    #FIXME: Rimuovere il metodo getById e inserirlo nel QueryHandler come metodo comune a tutte e due le classi, visto che è un metodo di base che potrebbe essere utile per entrambe.
     def getById(self, id_string: str) -> pd.DataFrame:
         
         with sqlite3.connect(self.getDbPathOrUrl()) as con:
