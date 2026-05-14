@@ -120,7 +120,7 @@ class BasicQueryEngine:
 
             # Convert each DataFrame row into an AuthorSelfCitation object.
             for index, row in df.iterrows():
-                citation = self._row_to_citation_obj(row, Aut)
+                citation = self._row_to_citation_obj(row, )
                 all_results.append(citation)
 
         return all_results
@@ -172,12 +172,10 @@ class BasicQueryEngine:
                 all_results.append(citation)
 
         return all_results
-<<<<<<< HEAD
         #getAllBibliographicEntities method 11
-=======
+
 
     #getAllBibliographicEntities method 11
->>>>>>> 1feaabb902ffc71440b3ed2f90263bf7d26d6128
     def getAllBibliographicEntities(self) -> list:
         all_results = [] # 1. Final List
         

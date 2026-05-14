@@ -37,22 +37,14 @@ class Citation(IdentifiableEntity):
     def getCreation(self) -> str:
         return self.creation
     
-<<<<<<< HEAD
     def getTimespan(self) -> str: # Spelling
-=======
-    def getTimespan(self) -> str:
->>>>>>> 1d02f119ac64c803e03c542a64f6d633a5a1b0f5
         return self.timespan
     
     def getCitingEntity(self) -> BibliographicEntity:
         citingEntity = BibliographicEntity()
         return citingEntity
     
-<<<<<<< HEAD
     def getCitedEntity(self) -> BibliographicEntity: # C'era scritto due volte "Citing"
-=======
-    def getCitedEntity(self) -> BibliographicEntity:
->>>>>>> 1d02f119ac64c803e03c542a64f6d633a5a1b0f5
         citedEntity = BibliographicEntity()
         return citedEntity
 
