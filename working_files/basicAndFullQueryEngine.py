@@ -38,16 +38,10 @@ class BasicQueryEngine:
         # Search in Citation Handlers (assuming an equivalent search exists)
         for handler in self.citationQuery:
             df = handler.getById(id)
-<<<<<<< HEAD:working_files/BasicQueryEngine.py
             if df is not None and not df.empty:
-                return self.getAllCitations() # Still to be implemented
-
-        return None # if nothing has been found, tell the user that the id doesn't exist.
-    
-=======
+                return self.getAllCitations() # Still to be implemented  
             if not df.empty:
                 return self._row_to_citation_obj(df.iloc[0])
-
         return None # if nothing has been found, tell the user that the id doesn't exist.
     
     def _row_to_bibliographic_obj(self, row):
@@ -126,7 +120,7 @@ class BasicQueryEngine:
 
             # Convert each DataFrame row into an AuthorSelfCitation object.
             for index, row in df.iterrows():
-                citation = self._row_to_citation_obj(row, AuthorSelfCitation)
+                citation = self._row_to_citation_obj(row, Aut)
                 all_results.append(citation)
 
         return all_results
@@ -178,17 +172,7 @@ class BasicQueryEngine:
                 all_results.append(citation)
 
         return all_results
-
-<<<<<<< HEAD
-
-
-
-
-
->>>>>>> 1d02f119ac64c803e03c542a64f6d633a5a1b0f5:working_files/basicAndFullQueryEngine.py
-=======
->>>>>>> 1feaabb902ffc71440b3ed2f90263bf7d26d6128
-    #getAllBibliographicEntities method 11
+        #getAllBibliographicEntities method 11
     def getAllBibliographicEntities(self) -> list:
         all_results = [] # 1. Final List
         
@@ -331,7 +315,6 @@ class BasicQueryEngine:
     #     internal_id = row["internal_id"]
     #     entity_type = str(row.get('type', '')).lower()
 
-<<<<<<< HEAD:working_files/BasicQueryEngine.py
     #     # Map the correct type (Journal, Book, etc.)
     #     if "journal" in entity_type:
     #         entity = JournalArticle()
@@ -365,7 +348,6 @@ class BasicQueryEngine:
     #     cit.creation = row.get('creation', "")
     #     cit.timespan = row.get('timespan', "")
     #     return cit
-=======
 
 
 
@@ -404,5 +386,3 @@ class FullQueryEngine(BasicQueryEngine):
             if bib_entity_title in entity.getCitingEntity().getTitle():
                 result.append(entity)
         return result
-
->>>>>>> 1d02f119ac64c803e03c542a64f6d633a5a1b0f5:working_files/basicAndFullQueryEngine.py
