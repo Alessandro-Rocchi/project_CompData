@@ -1,6 +1,6 @@
 from .queryHandler import BibliographicEntityQueryHandler
 from .queryHandler import CitationQueryHandler
-from .entityclasses import *
+from .entityClasses import *
 
 class BasicQueryEngine:
     def __init__(self):
