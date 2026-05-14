@@ -251,14 +251,10 @@ class CitationQueryHandler(QueryHandler):
     
         return self._runSparqlQuery(query)
 
-    
-
-
 class BibliographicEntityQueryHandler(QueryHandler):
     def __init__(self):
         super().__init__()
 
-    #FIXME: Rimuovere il metodo getById e inserirlo nel QueryHandler come metodo comune a tutte e due le classi, visto che è un metodo di base che potrebbe essere utile per entrambe.
     def getById(self, id_string: str) -> pd.DataFrame:
         
         with sqlite3.connect(self.getDbPathOrUrl()) as con:

@@ -1,7 +1,6 @@
 from .queryHandler import BibliographicEntityQueryHandler
 from .queryHandler import CitationQueryHandler
-from .entityClasses import BibliographicEntity
-from .entityClasses import *
+from .entityclasses import *
 
 class BasicQueryEngine:
     def __init__(self):
@@ -62,11 +61,8 @@ class BasicQueryEngine:
 
         return b_entity
 
-
-    #TODO: they should be ok but check again all citation-related methods. 
-
     # Helper method to convert a DataFrame row into a Citation object.
-    def _row_to_citation_obj(self, row, citation_class=Citation): 
+    def _row_to_citation_obj(self, row, citation_class=Citation) -> Citation: 
         
         #* Previous version
         # ids are not stored in the same way in the relational and graph database
@@ -175,11 +171,6 @@ class BasicQueryEngine:
                 all_results.append(citation)
 
         return all_results
-
-
-
-
-
 
     #getAllBibliographicEntities method 11
     def getAllBibliographicEntities(self) -> list:
@@ -325,33 +316,33 @@ class FullQueryEngine(BasicQueryEngine):
     def __init__(self):
         super().__init__()
     
-    def getAuthorSelfCitationByName(self, author_name: str) -> list[AuthorSelfCitation]:
+    def getAuthorSelfCitationByName(self, author_name: str) -> list[AuthorSelfCitation]: #* Method which takes in input an author name and returns a list of AuthorSelfCitation objects where the given author is both the citing and cited entity.
         result = []
-        citation_list = self.getAllAuthorSelfCitation()
+        citation_list = self.getAllAuthorSelfCitations()
         for entity in citation_list:
             if (author_name in entity.getCitingEntity().getAuthors()) and (author_name in entity.getCitedEntity().getAuthors()):
                 result.append(entity)
         return result
     
-    def getJournalSelfCitationByName(self, journal_name: str) -> list[JournalSelfCitation]:
+    def getJournalSelfCitationByName(self, journal_name: str) -> list[JournalSelfCitation]: #* Method which takes in input an author name and returns a list of JournalSelfCitation objects where the given journal is both the citing and cited entity.
         result = []
-        citation_list = self.getAllJournalSelfCitation()
+        citation_list = self.getAllJournalSelfCitations()
         for entity in citation_list:
             if (journal_name == entity.getCitingEntity().getVenue()) and (journal_name == entity.getCitedEntity().getVenue()):
                 result.append(entity)
         return result
     
-    def getCitationsOfBibEntityByTitleWithinDate(self, bib_entity_title: str, min_date: str, max_date: str) -> list[Citation]:
+    def getCitationsOfBibEntityByTitleWithinDate(self, bib_entity_title: str, min_date: str, max_date: str) -> list[Citation]: #* Method which takes in input a bibliographic entity title and a date range and returns a list of Citation objects where the given journal is both the citing and cited entity.
         result = []
-        citation_list = self.getCitationscEntitiesWithinDate(min_date, max_date)
+        citation_list = self.getCitationsWithinDate(min_date, max_date)
         for entity in citation_list:
             if bib_entity_title in entity.getCitedEntity().getTitle():
                 result.append(entity)
         return result
     
-    def getReferencesOfBibEntityByTitleWithinTimespan(self, bib_entity_title: str, min_timespan: str, max_timespan: str) -> list[Citation]:
+    def getReferencesOfBibEntityByTitleWithinTimespan(self, bib_entity_title: str, min_timespan: str, max_timespan: str) -> list[Citation]: #* Method which takes in input a bibliographic entity title and a timespan range and returns a list of Citation objects where the given journal is both the citing and cited entity.
         result = []
-        citation_list = self.getCitationscEntitiesWithinTimespan(min_timespan, max_timespan)
+        citation_list = self.getCitationsWithinTimespan(min_timespan, max_timespan)
         for entity in citation_list:
             if bib_entity_title in entity.getCitingEntity().getTitle():
                 result.append(entity)
