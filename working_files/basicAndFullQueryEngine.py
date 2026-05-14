@@ -172,7 +172,12 @@ class BasicQueryEngine:
                 all_results.append(citation)
 
         return all_results
+<<<<<<< HEAD
         #getAllBibliographicEntities method 11
+=======
+
+    #getAllBibliographicEntities method 11
+>>>>>>> 1feaabb902ffc71440b3ed2f90263bf7d26d6128
     def getAllBibliographicEntities(self) -> list:
         all_results = [] # 1. Final List
         
