@@ -97,7 +97,7 @@ class TestProjectBasic(unittest.TestCase):
             self.assertIsInstance(i, Citation)
         print("getAllCitations test passed")
 
-        """#FIXME Da Fixare 
+        """FIXME Da Fixare non restituisce una lista di AuthorSelfCitation
         r = fq.getAllAuthorSelfCitations() 
         self.assertIsInstance(r, list)
         for i in r:

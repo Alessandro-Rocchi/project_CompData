@@ -104,7 +104,8 @@ class BasicQueryEngine:
         return all_results 
 
 
-    # Returns a list of AuthorSelfCitation objects containing all author self-citations retrieved from all citation query handlers.
+    # Returns a list of AuthorSelfCitation objects containing all author self-citations retrieved from all citation query handlers.0
+    #FIXME Da Fixare non restituisce una lista di AuthorSelfCitation
     def getAllAuthorSelfCitations(self) -> list[AuthorSelfCitation]:
         all_results = [] # List to store all AuthorSelfCitation objects retrieved from all handlers.
 
