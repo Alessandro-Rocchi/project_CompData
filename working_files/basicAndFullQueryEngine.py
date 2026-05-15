@@ -44,23 +44,17 @@ class BasicQueryEngine:
                 return self._row_to_citation_obj(df.iloc[0])
         return None # if nothing has been found, tell the user that the id doesn't exist.
     
-    def _row_to_bibliographic_obj(self, row):
-        # Determine the specific class type
-        entity_type = row.get('type', '').lower()
+    def _row_to_bibliographic_obj(self, row, bib_entity_class=BibliographicEntity) -> BibliographicEntity:
+        # Made by following Chiara's proposal for citations.
+        bibliographic_entity = bib_entity_class()
+       
+        bibliographic_entity.title = row.get("title", "")
+        bibliographic_entity.publicationDate = row.get("pub_date", "")
+        bibliographic_entity.venue = row.get("venue", "")
+        bibliographic_entity.authors = row.get("authors", "").split(",") if row.get("authors") else [] # Due to the fact that authors are in another table and they can be more than one, the result must be a list.
+        bibliographic_entity.ids = row.get("ids", "").split(",") if row.get("ids") else [] #Same thing as for the authors.
 
-        # Map the correct type (Journal, Book, etc.)
-        if entity_type == "journal-article":
-            b_entity = JournalArticle(ids=[row.get("internal_id", "")])
-        elif entity_type == "book":
-            b_entity = Book(ids=[row.get("internal_id", "")])
-        else:
-            b_entity = BibliographicEntity(ids=[row.get("internal_id", "")])
-
-        b_entity.title = row.get("title", "")
-        b_entity.publicationDate = row.get("pub_date", "")
-        b_entity.venue = row.get("venue", "")
-
-        return b_entity
+        return bibliographic_entity
 
     # Helper method to convert a DataFrame row into a Citation object.
     def _row_to_citation_obj(self, row, citation_class=Citation) -> Citation: 
