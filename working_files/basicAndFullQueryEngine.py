@@ -105,7 +105,7 @@ class BasicQueryEngine:
 
 
     # Returns a list of AuthorSelfCitation objects containing all author self-citations retrieved from all citation query handlers.0
-    #FIXME Da Fixare non restituisce una lista di AuthorSelfCitation
+    #FIXME Da Fixare non restituisce una lista di AuthorSelfCitation --> FIXED: when the method was modified the parameter of _row_to_citation_obj was forgotten
     def getAllAuthorSelfCitations(self) -> list[AuthorSelfCitation]:
         all_results = [] # List to store all AuthorSelfCitation objects retrieved from all handlers.
 
@@ -115,7 +115,7 @@ class BasicQueryEngine:
 
             # Convert each DataFrame row into an AuthorSelfCitation object.
             for index, row in df.iterrows():
-                citation = self._row_to_citation_obj(row, )
+                citation = self._row_to_citation_obj(row, AuthorSelfCitation)
                 all_results.append(citation)
 
         return all_results

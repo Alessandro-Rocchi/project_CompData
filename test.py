@@ -33,7 +33,7 @@ class TestProjectBasic(unittest.TestCase):
     citation = "data" + sep + "dh_citations.csv"
     bib_entity = "data" + sep + "dh_metadata.json"
     relational = "." + sep + "relational.db"
-    graph = "http://192.168.1.46:9999/blazegraph/sparql"
+    graph = "http://192.168.1.55:9999/blazegraph/sparql"
 
     def test_01_CitationUploadHandler(self):
         u = CitationUploadHandler()
@@ -97,12 +97,11 @@ class TestProjectBasic(unittest.TestCase):
             self.assertIsInstance(i, Citation)
         print("getAllCitations test passed")
 
-        """FIXME Da Fixare non restituisce una lista di AuthorSelfCitation
         r = fq.getAllAuthorSelfCitations() 
         self.assertIsInstance(r, list)
         for i in r:
             self.assertIsInstance(i, AuthorSelfCitation)
-        """
+        print("getAllAuthorSelfCitations test passed")
 
         r = fq.getAllJournalSelfCitations()
         self.assertIsInstance(r, list)
