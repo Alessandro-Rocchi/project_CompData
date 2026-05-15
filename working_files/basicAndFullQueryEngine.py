@@ -169,7 +169,7 @@ class BasicQueryEngine:
         #getAllBibliographicEntities method 11
 
 
-    #getAllBibliographicEntities method 11
+    #getAllBibliographicEntities method 11 FIXME Si impalla qui
     def getAllBibliographicEntities(self) -> list:
         all_results = [] # 1. Final List
         
@@ -352,7 +352,7 @@ class FullQueryEngine(BasicQueryEngine):
     def __init__(self):
         super().__init__()
     
-    def getAuthorSelfCitationByName(self, author_name: str) -> list[AuthorSelfCitation]: #* Method which takes in input an author name and returns a list of AuthorSelfCitation objects where the given author is both the citing and cited entity.
+    def getAuthorSelfCitationsByName(self, author_name: str) -> list[AuthorSelfCitation]: #* Method which takes in input an author name and returns a list of AuthorSelfCitation objects where the given author is both the citing and cited entity.
         result = []
         citation_list = self.getAllAuthorSelfCitations()
         for entity in citation_list:
@@ -360,7 +360,7 @@ class FullQueryEngine(BasicQueryEngine):
                 result.append(entity)
         return result
     
-    def getJournalSelfCitationByName(self, journal_name: str) -> list[JournalSelfCitation]: #* Method which takes in input an author name and returns a list of JournalSelfCitation objects where the given journal is both the citing and cited entity.
+    def getJournalSelfCitationsByName(self, journal_name: str) -> list[JournalSelfCitation]: #* Method which takes in input an author name and returns a list of JournalSelfCitation objects where the given journal is both the citing and cited entity.
         result = []
         citation_list = self.getAllJournalSelfCitations()
         for entity in citation_list:

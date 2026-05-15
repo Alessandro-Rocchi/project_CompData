@@ -107,6 +107,7 @@ class CitationUploadHandler(UploadHandler):
         req = urllib.request.Request( #create a request to the server and establish that we are sending a n-triples file
             endpoint,
             data=rdf_data,
+            method="POST",
             headers={'Content-Type': 'application/n-triples'}
         )
 
@@ -118,8 +119,8 @@ class CitationUploadHandler(UploadHandler):
                     print(f"Failed to upload data. Status code: {response.status}")
                     check = False
         except Exception as e:
-            print(f"Error occurred: {e}")
-            check = False
+            print(f"\n[ERRORE FATALE IN PUSHDATATODB]: {e}\n") # Aggiungi questa riga!
+            return False
 
         return check
 
