@@ -48,27 +48,27 @@ class CitationUploadHandler(UploadHandler):
         Author_SC = URIRef(self.base_url + "author_sc")
         Journal_SC = URIRef(self.base_url + "journal_sc")
 
-        #attributes
+        #attributes of the resources
 
         timespan = URIRef(self.base_url + "timespan")
         creation = URIRef(self.base_url + "creation")
 
-        #relations
+        #relations between the resources
 
         citing = URIRef(self.base_url + "hasCitingEntity")
         cited = URIRef(self.base_url + "hasCitedEntity")
 
-        #Create the dataframe
+        #Create the dataframe and for every row i define a type
         citations = read_csv(path, 
                         keep_default_na=False,
                         dtype={
-                            "oci": "string",
-                            "citing": "string",
-                            "cited": "string",
-                            "creation": "string",
-                            "timespan": "string",
-                            "journal_sc": "string",
-                            "author_sc": "string"
+                            "oci": str,
+                            "citing": str,
+                            "cited": str,
+                            "creation": str,
+                            "timespan": str,
+                            "journal_sc": str,
+                            "author_sc": str
                         })
     
         #to avoid mistake the method strip delete every blank space and avoid any syntax problem
@@ -77,49 +77,43 @@ class CitationUploadHandler(UploadHandler):
         citations["cited"] = citations["cited"].str.strip()
         citations["creation"] = citations["creation"].str.strip()
         citations["timespan"] = citations["timespan"].str.strip()
-        citations["journal_sc"] = citations["journal_sc"].str.strip().str.lower() #to avoid syntax problem and to manage the boolean value in a better way, I transform the string in lowercase and I delete every blank space  
+        citations["journal_sc"] = citations["journal_sc"].str.strip().str.lower() 
         citations["author_sc"] = citations["author_sc"].str.strip().str.lower()
 
-        citations_local_id = {}
-
-        #iterate all the rows in the Dataframe to transform them in RDF triple
+        #iterate all the rows in the Dataframe to transform them in RDF triple adding to the graph the type of the resource and the relations between them. If there is a journal self citation or an author self citation, I add to the graph also this information.
         for idx, rows in citations.iterrows():
-
-            subj = URIRef(self.base_url + rows["oci"])
-            citations_local_id[idx] = subj
-            my_graph.add((subj, RDF.type, Identifier))
-            my_graph.add((subj, RDF.type, Citation))
-            my_graph.add((subj, citing, URIRef(rows["citing"])))
-            my_graph.add((subj, cited, URIRef(rows["cited"])))
-            my_graph.add((subj, creation, Literal(rows["creation"])))
-            my_graph.add((subj, timespan, Literal(rows["timespan"])))
-
+            subj = URIRef(self.base_url + rows["oci"]) #the subject of the triple is the oci, which is a unique identifier for each citation. I create a URIRef using the base_url and the oci value to ensure that each citation has a unique and consistent identifier in the RDF graph.
+            my_graph.add((subj, RDF.type, Identifier)) #I add to the graph the type of the resource, which is "Identifier". This indicates that the subject of the triple is an identifier for a citation. By defining this type, we can later query the graph to retrieve all resources that are of type "Identifier", which will allow us to easily access and analyze the citation data.
+            my_graph.add((subj, RDF.type, Citation)) #I add to the graph the type of the resource, which is "Citation". This indicates that the subject of the triple is a citation. By defining this type, we can later query the graph to retrieve all resources that are of type "Citation", which will allow us to easily access and analyze the citation data.
+            my_graph.add((subj, citing, URIRef(rows["citing"]))) #I add to the graph the relation "hasCitingEntity" between the subject (the citation) and the citing entity (the paper that is citing). I create a URIRef for the citing entity using the value from the "citing" column in the CSV file. This allows us to represent the relationship between the citation and the citing entity in the RDF graph, which can be useful for querying and analyzing citation patterns.
+            my_graph.add((subj, cited, URIRef(rows["cited"]))) #I add to the graph the relation "hasCitedEntity" between the subject (the citation) and the cited entity (the paper that is being cited). I create a URIRef for the cited entity using the value from the "cited" column in the CSV file. This allows us to represent the relationship between the citation and the cited entity in the RDF graph, which can be useful for querying and analyzing citation patterns.
+            my_graph.add((subj, creation, Literal(rows["creation"])))#I add to the graph the relation "creation" between the subject (the citation) and the creation date (the date when the citation was created). I create a Literal for the creation date using the value from the "creation" column in the CSV file. This allows us to represent the temporal aspect of the citation in the RDF graph, which can be useful for querying and analyzing citation trends over time.
+            my_graph.add((subj, timespan, Literal(rows["timespan"])))#I add to the graph the relation "timespan" between the subject (the citation) and the timespan (the time between the publication of the citing paper and the cited paper). I create a Literal for the timespan using the value from the "timespan" column in the CSV file. This allows us to represent the temporal aspect of the citation in the RDF graph, which can be useful for querying and analyzing citation patterns over different time periods.
             if rows["journal_sc"] == "yes": #define if a citation include a journal self citation
-                my_graph.add((subj, RDF.type, Journal_SC))
-            
+                my_graph.add((subj, RDF.type, Journal_SC)) #I add to the graph the type of the resource, which is "Journal_SC". This indicates that the subject of the triple is a journal self-citation. By defining this type, we can later query the graph to retrieve all resources that are of type "Journal_SC", which will allow us to easily access and analyze journal self-citation patterns in the citation data.
             if rows["author_sc"] == "yes": #define if a citation include a author self citation
-                my_graph.add((subj, RDF.type, Author_SC))
+                my_graph.add((subj, RDF.type, Author_SC))#I add to the graph the type of the resource, which is "Author_SC". This indicates that the subject of the triple is an author self-citation. By defining this type, we can later query the graph to retrieve all resources that are of type "Author_SC", which will allow us to easily access and analyze author self-citation patterns in the citation data.
         
         endpoint = self.getDbPathOrUrl() #set the endpoint using the method of the superclass
 
         rdf_data = my_graph.serialize(format="nt").encode("utf-8") #serialize all the data in nt format and encode it in UTF-8
 
-        req = urllib.request.Request( #create a request to the server and establish that we are sending a n-triples file
+        req = urllib.request.Request( #create a request to the server and establish that we are sending a n-triples file. The "data" parameter is used to send the RDF data in the body of the request, and the "headers" parameter is used to specify the content type of the data being sent. The "method" parameter is set to "POST" to indicate that we want to create new data on the server.
             endpoint,
             data=rdf_data,
             method="POST",
-            headers={'Content-Type': 'application/n-triples'}
+            headers={'Content-Type': 'application/n-triples'} #data are been sending in a one packet and not one by one, so the content type is application/n-triples and not text/plain. This helps to make the upload more efficient and faster, especially for large datasets.
         )
 
-        try: # try the code to catch the Exception
-            with urllib.request.urlopen(req) as response: 
-                if response.status == 200:
+        try: # try used to check if the server is working and if the data is correctly uploaded. If there is an error, it will be caught in the except block and printed.
+            with urllib.request.urlopen(req) as response: # open the connection and send the data to the server. The "with" statement ensures that the connection is properly closed after the block is executed, even if an error occurs.
+                if response.status == 200: # check if the response status is 200, which indicates that the data was successfully uploaded. If the status is not 200, it means that there was an error in uploading the data, and we print the status code for debugging purposes.
                     check = True
                 else:
-                    print(f"Failed to upload data. Status code: {response.status}")
+                    print(f"Failed to upload data. Status code: {response.status}") # print the status code for debugging purposes
                     check = False
-        except Exception as e:
-            print(f"\n[ERRORE FATALE IN PUSHDATATODB]: {e}\n") # Aggiungi questa riga!
+        except Exception as e: # catch any exceptions that occur during the upload process, such as network errors or server issues. If an exception is caught, we print a fatal error message along with the exception details for debugging purposes, and return False to indicate that the upload was unsuccessful.
+            print(f"\nFatal Error in loading data: {e}\n")
             return False
 
         return check

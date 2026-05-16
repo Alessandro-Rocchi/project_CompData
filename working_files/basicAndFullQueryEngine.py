@@ -57,7 +57,7 @@ class BasicQueryEngine:
         return bibliographic_entity
 
     # Helper method to convert a DataFrame row into a Citation object.
-    def _row_to_citation_obj(self, row, citation_class=Citation) -> Citation: 
+    def _rowA_to_citation_obj(self, row, citation_class=Citation) -> Citation: 
         # citation_class is an optional parameter that allows you to specify the type of Citation. 
         # By default, it will create a generic Citation object.
         citation = citation_class()
