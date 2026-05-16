@@ -58,23 +58,6 @@ class BasicQueryEngine:
 
     # Helper method to convert a DataFrame row into a Citation object.
     def _row_to_citation_obj(self, row, citation_class=Citation) -> Citation: 
-        
-        #* Previous version
-        # ids are not stored in the same way in the relational and graph database
-        # Dataframe doesn't have a 'type' column
-        """ cit_type = row.get('type', '')
-        if cit_type == 'journal-self':
-            cit = JournalSelfCitation(ids=[row.get('citation_id', '')])
-        elif cit_type == 'author-self':
-            cit = AuthorSelfCitation(ids=[row.get('citation_id', '')])
-        else:
-            cit = Citation(ids=[row.get('citation_id', '')])
-        
-        cit.creation = row.get('creation', "")
-        cit.timespan = row.get('timespan', "")
-        return cit """ 
-
-        #* Proposed version with the optional parameter to specify the citation class type. 
         # citation_class is an optional parameter that allows you to specify the type of Citation. 
         # By default, it will create a generic Citation object.
         citation = citation_class()
@@ -104,8 +87,7 @@ class BasicQueryEngine:
         return all_results 
 
 
-    # Returns a list of AuthorSelfCitation objects containing all author self-citations retrieved from all citation query handlers.0
-    #FIXME Da Fixare non restituisce una lista di AuthorSelfCitation --> FIXED: when the method was modified the parameter of _row_to_citation_obj was forgotten
+    # Returns a list of AuthorSelfCitation objects containing all author self-citations retrieved from all citation query handlers.
     def getAllAuthorSelfCitations(self) -> list[AuthorSelfCitation]:
         all_results = [] # List to store all AuthorSelfCitation objects retrieved from all handlers.
 
@@ -167,7 +149,7 @@ class BasicQueryEngine:
                 all_results.append(citation)
 
         return all_results
-        #getAllBibliographicEntities method 11
+   
 
 
     #getAllBibliographicEntities method 11 FIXME Si impalla qui
