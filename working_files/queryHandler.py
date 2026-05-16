@@ -17,7 +17,6 @@ class CitationQueryHandler(QueryHandler):
         super().__init__()
 
     # Takes a SPARQL query as input and returns the result as a pandas DataFrame
-    # ex QueryDB, changed name and made it private since it's a helper method 
     def _runSparqlQuery(self, query: str) -> pd.DataFrame: 
         return get(self.getDbPathOrUrl(), query, True)
     
@@ -117,8 +116,10 @@ class CitationQueryHandler(QueryHandler):
     
         return self._runSparqlQuery(query)
     
-    #*** Da rivedere i timespan negativi per capire come gestirli al meglio.
+    
     # Helper method to convert an ISO timespan string (e.g., "P2Y0M16D") into a tuple of integers (years, months, days).
+    # Negative timespans are preserved and compared as negative durations.
+    # They are not removed because the project must keep the source data as it is.
     def _timespan_to_tuple(self, timespan: str) -> tuple: 
         timespan = str(timespan).strip() # Ensure timespan is a string and remove trailing whitespace
 
@@ -129,7 +130,7 @@ class CitationQueryHandler(QueryHandler):
         
         y = m = d = 0
 
-        sign = 1 # Handle negative timespans if needed (e.g., "-P2Y" for 2 years in the past)
+        sign = 1 # Handle negative timespans if needed (e.g., "-P2Y")
         if timespan.startswith("-"):
             sign = -1
             timespan = timespan[1:] # Remove the leading "-" for further processing
