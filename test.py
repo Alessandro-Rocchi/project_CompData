@@ -33,7 +33,7 @@ class TestProjectBasic(unittest.TestCase):
     citation = "data" + sep + "dh_citations.csv"
     bib_entity = "data" + sep + "dh_metadata.json"
     relational = "." + sep + "relational.db"
-    graph = "http://localhost:9999/blazegraph/sparql"
+    graph = " http://192.168.1.50:9999/blazegraph/sparql"
 
     def test_01_CitationUploadHandler(self):
         u = CitationUploadHandler()

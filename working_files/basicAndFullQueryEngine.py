@@ -1,5 +1,4 @@
-from .queryHandler import BibliographicEntityQueryHandler
-from .queryHandler import CitationQueryHandler
+from .queryHandler import BibliographicEntityQueryHandler, CitationQueryHandler
 from .entityClasses import *
 
 class BasicQueryEngine:
@@ -65,8 +64,8 @@ class BasicQueryEngine:
         citation.ids = [row.get("citation_id", "")]
         citation.creation = row.get("creation", "")
         citation.timespan = row.get("timespan", "")
-        citation.citingEntityId = row.get("citing", "")
-        citation.citedEntityId = row.get("cited", "")
+        citation.citingEntity = row.get("citing", "")
+        citation.citedEntity = row.get("cited", "")
 
         return citation
     

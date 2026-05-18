@@ -2,7 +2,7 @@ class IdentifiableEntity: # This is a base class for entities that can be identi
     def __init__(self):
         self.ids = []
 
-    def getIds(self):
+    def getIds(self)-> list[str]:
         return self.ids
 
 class BibliographicEntity(IdentifiableEntity): # This class represents a bibliographic entity, such as a paper or a book. It inherits from IdentifiableEntity and has additional attributes for title, authors, publication date, and venue. It also has getter methods for these attributes.
@@ -13,16 +13,16 @@ class BibliographicEntity(IdentifiableEntity): # This class represents a bibliog
         self.publicationDate = ""
         self.venue = ""
 
-    def getTitle(self):
+    def getTitle(self) -> str:
         return self.title
 
-    def getAuthors(self):
+    def getAuthors(self) -> list[str]:
         return self.authors
 
-    def getPublicationDate(self):
+    def getPublicationDate(self) -> str:
         return self.publicationDate
 
-    def getVenue(self):
+    def getVenue(self) -> str:
         return self.venue
     
 
