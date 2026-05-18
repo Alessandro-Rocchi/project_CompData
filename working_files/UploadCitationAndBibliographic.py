@@ -130,11 +130,17 @@ class BibliographicEntityUploadHandler(UploadHandler): # BibliographicEntityUplo
             df = pd.json_normalize(raw_data) #Create the DataFrame (if there are nested elements, this flattens them).
 
             df["internal_id"] = ["internal_" + str(i) for i in range(len(df))] #Create the internal ID
+
+            #SUSANNA 1. Riempi i NaN nel DataFrame principale prima di estrarre le tabelle
+            df = df.fillna("")
             
             #Create the tables
             bibliographic_entity = df[["internal_id", "title", "pub_date", "venue"]]
-            authors_table = df[["internal_id", "author"]].explode("author")
-            id_table = df[["internal_id", "id"]].explode("id")
+
+            # SUSANNA HA AGGIUNTO .fillna("") alla fine 2. Per le tabelle con gli explode, usa fillna("") DOPO l'explode,
+            # perché l'explode di una lista vuota genera un NaN.
+            authors_table = df[["internal_id", "author"]].explode("author").fillna("")
+            id_table = df[["internal_id", "id"]].explode("id").fillna("")
 
             db_path = self.getDbPathOrUrl() #Save the path in order to retrieve it later.
 
