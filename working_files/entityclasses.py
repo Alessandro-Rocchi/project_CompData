@@ -41,12 +41,10 @@ class Citation(IdentifiableEntity): # This class represents a citation, which is
         return self.timespan
     
     def getCitingEntity(self) -> BibliographicEntity:
-        citingEntity = BibliographicEntity()
-        return citingEntity
+        return self.citingEntity
     
     def getCitedEntity(self) -> BibliographicEntity:
-        citedEntity = BibliographicEntity()
-        return citedEntity
+        return self.citedEntity
 
 class JournalSelfCitation(Citation): # This class represents a journal self-citation, which is a specific type of citation where the citing and cited entities are the same journal. It inherits from Citation and does not have any additional attributes or methods, but it can be used to differentiate journal self-citations from other types of citations in the RDF graph.
     def __init__(self):
