@@ -151,108 +151,54 @@ class BasicQueryEngine:
         return all_results
    
 
-    #method 11
-    def getAllBibliographicEntities(self) -> list[BibliographicEntity]:
+    # getAllBibliographicEntities method 11
+    def getAllBibliographicEntities(self) -> list:
         all_results = [] 
         for handler in self.bibliographicEntityQuery:
             df = handler.getAllBibliographicEntities()
-            
             for index, row in df.iterrows():
-                internal_id = row["internal_id"]
-                
-                # 1. Recover missing data with helper methods
-                df_authors = handler.getAuthorsByInternalId(internal_id)
-                df_ids = handler.getIdsByInternalId(internal_id)
-                
-                # 2. transform row into a Python dictionary
-                row_dict = row.to_dict()
-                row_dict["authors"] = ",".join(df_authors["author"].tolist())
-                row_dict["ids"] = ",".join(df_ids["id"].tolist())
-                
-                # 3. Pass the enriched dictionary to the _row_to_bibliographic_obj method
-                entity = self._row_to_bibliographic_obj(row_dict)
+                entity = self._row_to_bibliographic_obj(row)
                 all_results.append(entity)
-                
         return all_results
     
     # getBibliographicEntitiesWithTitle method 12
-    def getBibliographicEntitiesWithTitle(self, title: str) -> list[BibliographicEntity]:
+    def getBibliographicEntitiesWithTitle(self, title: str) -> list:
         all_results = [] 
         for handler in self.bibliographicEntityQuery:
             df = handler.getBibliographicEntitiesWithTitle(title)
-            
             for index, row in df.iterrows():
-                internal_id = row["internal_id"]
-                df_authors = handler.getAuthorsByInternalId(internal_id)
-                df_ids = handler.getIdsByInternalId(internal_id)
-                
-                row_dict = row.to_dict()
-                row_dict["authors"] = ",".join(df_authors["author"].tolist())
-                row_dict["ids"] = ",".join(df_ids["id"].tolist())
-                
-                entity = self._row_to_bibliographic_obj(row_dict)
+                entity = self._row_to_bibliographic_obj(row)
                 all_results.append(entity)
-                
         return all_results
     
     # getBibliographicEntitiesWithAuthor method 13
-    def getBibliographicEntitiesWithAuthor(self, author: str) -> list[BibliographicEntity]:
+    def getBibliographicEntitiesWithAuthor(self, author: str) -> list:
         all_results = [] 
         for handler in self.bibliographicEntityQuery:
             df = handler.getBibliographicEntitiesWithAuthor(author)
-            
             for index, row in df.iterrows():
-                internal_id = row["internal_id"]
-                df_authors = handler.getAuthorsByInternalId(internal_id)
-                df_ids = handler.getIdsByInternalId(internal_id)
-                
-                row_dict = row.to_dict()
-                row_dict["authors"] = ",".join(df_authors["author"].tolist())
-                row_dict["ids"] = ",".join(df_ids["id"].tolist())
-                
-                entity = self._row_to_bibliographic_obj(row_dict)
+                entity = self._row_to_bibliographic_obj(row)
                 all_results.append(entity)
-                
         return all_results
     
     # getBibliographicEntitiesWithinDate method 14
-    def getBibliographicEntitiesWithinDate(self, start_date: str = None, end_date: str = None) -> list[BibliographicEntity]:
+    def getBibliographicEntitiesWithinDate(self, start_date: str = None, end_date: str = None) -> list:
         all_results = []
         for handler in self.bibliographicEntityQuery:
             df = handler.getBibliographicEntitiesWithinPublicationDate(start_date, end_date)
-            
             for index, row in df.iterrows():
-                internal_id = row["internal_id"]
-                df_authors = handler.getAuthorsByInternalId(internal_id)
-                df_ids = handler.getIdsByInternalId(internal_id)
-                
-                row_dict = row.to_dict()
-                row_dict["authors"] = ",".join(df_authors["author"].tolist())
-                row_dict["ids"] = ",".join(df_ids["id"].tolist())
-                
-                entity = self._row_to_bibliographic_obj(row_dict)
+                entity = self._row_to_bibliographic_obj(row)
                 all_results.append(entity)
-                
         return all_results
     
     # getBibliographicEntitiesWithVenue method 15
-    def getBibliographicEntitiesWithVenue(self, venue: str) -> list[BibliographicEntity]:
+    def getBibliographicEntitiesWithVenue(self, venue: str) -> list:
         all_results = [] 
         for handler in self.bibliographicEntityQuery:
             df = handler.getBibliographicEntitiesWithVenue(venue)
-            
             for index, row in df.iterrows():
-                internal_id = row["internal_id"]
-                df_authors = handler.getAuthorsByInternalId(internal_id)
-                df_ids = handler.getIdsByInternalId(internal_id)
-                
-                row_dict = row.to_dict()
-                row_dict["authors"] = ",".join(df_authors["author"].tolist())
-                row_dict["ids"] = ",".join(df_ids["id"].tolist())
-                
-                entity = self._row_to_bibliographic_obj(row_dict)
+                entity = self._row_to_bibliographic_obj(row)
                 all_results.append(entity)
-                
         return all_results
     
     
