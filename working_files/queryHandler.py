@@ -256,61 +256,109 @@ class BibliographicEntityQueryHandler(QueryHandler):
     def __init__(self):
         super().__init__()
 
-    def getById(self, id_string: str) -> pd.DataFrame:
-        
-        with sqlite3.connect(self.getDbPathOrUrl()) as con:
-            query = """
-                SELECT BibliographicEntity.* FROM BibliographicEntity 
-                JOIN BibliographicEntity_ID ON BibliographicEntity.internal_id = BibliographicEntity_ID.internal_id
-                WHERE BibliographicEntity_ID.id = ?
-            """
-            return pd.read_sql(query, con, params=(id_string,))
+    #GROUP BY: take all the rows with the same internal_id and group them together
+    #GROUP_CONCAT: take all the values that you are grouping and put them in one string,
+    #where they are separated through a comma. It combines data from multiple rows into a single string
+    #DISTINCT: before putting a value in a string, check if there are duplicates
+    #IN(SELECT...): check what is the internal_id of the rows with such id/author and apply the
+    #query on the rows with such internal id/author
 
+
+    def getById(self, id_string: str) -> pd.DataFrame:
+        with sqlite3.connect(self.getDbPathOrUrl()) as con:
+            # Usiamo una sottoquery (IN) sulla tabella degli ID per identificare l'internal_id corretto,
+            # ma la query principale fa le JOIN raggruppate per includere tutti gli autori e ID di quell'entità
+            query = """
+                SELECT BibliographicEntity.internal_id, title, pub_date, venue,
+                       GROUP_CONCAT(DISTINCT BibliographicEntity_Authors.author) as authors, 
+                       GROUP_CONCAT(DISTINCT BibliographicEntity_ID.id) as ids
+                FROM BibliographicEntity
+                LEFT JOIN BibliographicEntity_Authors ON BibliographicEntity.internal_id = BibliographicEntity_Authors.internal_id
+                LEFT JOIN BibliographicEntity_ID ON BibliographicEntity.internal_id = BibliographicEntity_ID.internal_id
+                WHERE BibliographicEntity.internal_id IN (
+                    SELECT internal_id FROM BibliographicEntity_ID WHERE id = ?
+                )
+                GROUP BY BibliographicEntity.internal_id 
+            """   
+            return pd.read_sql(query, con, params=(id_string,))
+        
+        
     def getAllBibliographicEntities(self) -> pd.DataFrame:
         with sqlite3.connect(self.getDbPathOrUrl()) as con:
-            return pd.read_sql("SELECT * FROM BibliographicEntity", con)
+            query = """
+                SELECT BibliographicEntity.internal_id, title, pub_date, venue,
+                       GROUP_CONCAT(DISTINCT BibliographicEntity_Authors.author) as authors, 
+                       GROUP_CONCAT(DISTINCT BibliographicEntity_ID.id) as ids
+                FROM BibliographicEntity
+                LEFT JOIN BibliographicEntity_Authors ON BibliographicEntity.internal_id = BibliographicEntity_Authors.internal_id
+                LEFT JOIN BibliographicEntity_ID ON BibliographicEntity.internal_id = BibliographicEntity_ID.internal_id
+                GROUP BY BibliographicEntity.internal_id
+            """
+            return pd.read_sql(query, con)
 
     def getBibliographicEntitiesWithTitle(self, title: str) -> pd.DataFrame:
         with sqlite3.connect(self.getDbPathOrUrl()) as con:
-            query = "SELECT * FROM BibliographicEntity WHERE title LIKE ?"
+            query = """
+                SELECT BibliographicEntity.internal_id, title, pub_date, venue,
+                       GROUP_CONCAT(DISTINCT BibliographicEntity_Authors.author) as authors, 
+                       GROUP_CONCAT(DISTINCT BibliographicEntity_ID.id) as ids
+                FROM BibliographicEntity
+                LEFT JOIN BibliographicEntity_Authors ON BibliographicEntity.internal_id = BibliographicEntity_Authors.internal_id
+                LEFT JOIN BibliographicEntity_ID ON BibliographicEntity.internal_id = BibliographicEntity_ID.internal_id
+                WHERE title LIKE ?
+                GROUP BY BibliographicEntity.internal_id
+            """
             return pd.read_sql(query, con, params=(f"%{title}%",))
 
     def getBibliographicEntitiesWithAuthor(self, author_name: str) -> pd.DataFrame:
         with sqlite3.connect(self.getDbPathOrUrl()) as con:
             query = """
-                SELECT BibliographicEntity.* FROM BibliographicEntity 
-                JOIN BibliographicEntity_Authors ON BibliographicEntity.internal_id = BibliographicEntity_Authors.internal_id 
-                WHERE BibliographicEntity_Authors.author LIKE ?
+                SELECT BibliographicEntity.internal_id, title, pub_date, venue,
+                       GROUP_CONCAT(DISTINCT BibliographicEntity_Authors.author) as authors, 
+                       GROUP_CONCAT(DISTINCT BibliographicEntity_ID.id) as ids
+                FROM BibliographicEntity
+                LEFT JOIN BibliographicEntity_Authors ON BibliographicEntity.internal_id = BibliographicEntity_Authors.internal_id
+                LEFT JOIN BibliographicEntity_ID ON BibliographicEntity.internal_id = BibliographicEntity_ID.internal_id
+                WHERE BibliographicEntity.internal_id IN (
+                    SELECT internal_id FROM BibliographicEntity_Authors WHERE author LIKE ?
+                )
+                GROUP BY BibliographicEntity.internal_id
             """
             return pd.read_sql(query, con, params=(f"%{author_name}%",))
 
     def getBibliographicEntitiesWithinPublicationDate(self, start_date: str = None, end_date: str = None) -> pd.DataFrame:
         with sqlite3.connect(self.getDbPathOrUrl()) as con:
-            query = "SELECT * FROM BibliographicEntity WHERE 1=1"
+            where_clauses = ["1=1"]
             params = []
             if start_date:
-                query += " AND pub_date >= ?"
+                where_clauses.append("pub_date >= ?")
                 params.append(start_date)
             if end_date:
-                query += " AND pub_date <= ?"
+                where_clauses.append("pub_date <= ?")
                 params.append(end_date)
+            
+            query = f"""
+                SELECT BibliographicEntity.internal_id, title, pub_date, venue,
+                       GROUP_CONCAT(DISTINCT BibliographicEntity_Authors.author) as authors, 
+                       GROUP_CONCAT(DISTINCT BibliographicEntity_ID.id) as ids
+                FROM BibliographicEntity
+                LEFT JOIN BibliographicEntity_Authors ON BibliographicEntity.internal_id = BibliographicEntity_Authors.internal_id
+                LEFT JOIN BibliographicEntity_ID ON BibliographicEntity.internal_id = BibliographicEntity_ID.internal_id
+                WHERE {" AND ".join(where_clauses)}
+                GROUP BY BibliographicEntity.internal_id
+            """
             return pd.read_sql(query, con, params=params)
 
     def getBibliographicEntitiesWithVenue(self, venue_name: str) -> pd.DataFrame:
         with sqlite3.connect(self.getDbPathOrUrl()) as con:
-            query = "SELECT * FROM BibliographicEntity WHERE venue LIKE ?"
+            query = """
+                SELECT BibliographicEntity.internal_id, title, pub_date, venue,
+                       GROUP_CONCAT(DISTINCT BibliographicEntity_Authors.author) as authors, 
+                       GROUP_CONCAT(DISTINCT BibliographicEntity_ID.id) as ids
+                FROM BibliographicEntity
+                LEFT JOIN BibliographicEntity_Authors ON BibliographicEntity.internal_id = BibliographicEntity_Authors.internal_id
+                LEFT JOIN BibliographicEntity_ID ON BibliographicEntity.internal_id = BibliographicEntity_ID.internal_id
+                WHERE venue LIKE ?
+                GROUP BY BibliographicEntity.internal_id
+            """
             return pd.read_sql(query, con, params=(f"%{venue_name}%",))
-        
-    def getAuthorsByInternalId(self, internal_id: str) -> pd.DataFrame:
-        with sqlite3.connect(self.getDbPathOrUrl()) as con:
-            query = "SELECT author FROM BibliographicEntity_Authors WHERE internal_id = ?"
-            return pd.read_sql(query, con, params=(internal_id,))
-        
-        #First Helper method
-
-    def getIdsByInternalId(self, internal_id: str) -> pd.DataFrame:
-        with sqlite3.connect(self.getDbPathOrUrl()) as con:
-            query = "SELECT id FROM BibliographicEntity_ID WHERE internal_id = ?"
-            return pd.read_sql(query, con, params=(internal_id,))
-        
-        #Second Helper method 
