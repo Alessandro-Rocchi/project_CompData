@@ -146,7 +146,7 @@ class BibliographicEntityUploadHandler(UploadHandler): # BibliographicEntityUplo
             db_path = self.getDbPathOrUrl() #Save the path in order to retrieve it later.
 
             with sqlite3.connect(db_path) as conn: #The "with" closes the command even with errors. Open the SQLite database in db_path or create a new one if needed.
-                bibliographic_entity.to_sql("BibliographicEntity", conn, if_exists="replace", index=False) #Manage the tables in SQL
+                bibliographic_entity.to_sql("BibliographicEntity_Metadata", conn, if_exists="replace", index=False) #Manage the tables in SQL
                 authors_table.to_sql("BibliographicEntity_Authors", conn, if_exists="replace", index=False)
                 id_table.to_sql("BibliographicEntity_ID", conn, if_exists="replace", index=False)
             return True
