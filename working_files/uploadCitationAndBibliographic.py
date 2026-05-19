@@ -133,6 +133,7 @@ class BibliographicEntityUploadHandler(UploadHandler): # BibliographicEntityUplo
             # perché l'explode di una lista vuota genera un NaN.
             authors_table = df[["internal_id", "author"]].explode("author").fillna("")
             id_table = df[["internal_id", "id"]].explode("id").fillna("")
+            id_table = id_table[id_table["id"] != ""] # Prevent crushes if id is missing. It removes the rows in which the ID is an empty string
 
             db_path = self.getDbPathOrUrl() #Save the path in order to retrieve it later.
 
