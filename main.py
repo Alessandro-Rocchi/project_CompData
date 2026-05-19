@@ -1,6 +1,3 @@
-from working_files.uploadCitationAndBibliographic import CitationUploadHandler, BibliographicEntityUploadHandler
-from working_files.queryHandler import BibliographicEntityQueryHandler, CitationQueryHandler
-from working_files.basicAndFullQueryEngine import BasicQueryEngine
 from test import TestProjectBasic
 
 
