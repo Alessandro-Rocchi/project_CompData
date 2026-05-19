@@ -1,6 +1,5 @@
 from test import TestProjectBasic
 
-
 def main():
     t = TestProjectBasic()
     print(t.test_01_CitationUploadHandler())
