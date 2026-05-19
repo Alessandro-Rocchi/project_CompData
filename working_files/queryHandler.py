@@ -266,19 +266,17 @@ class BibliographicEntityQueryHandler(QueryHandler):
 
     def getById(self, id_string: str) -> pd.DataFrame:
         with sqlite3.connect(self.getDbPathOrUrl()) as con:
-            # Usiamo una sottoquery (IN) sulla tabella degli ID per identificare l'internal_id corretto,
-            # ma la query principale fa le JOIN raggruppate per includere tutti gli autori e ID di quell'entità
             query = """
-                SELECT BibliographicEntity.internal_id, title, pub_date, venue,
+                SELECT BibliographicEntity_Metadata.internal_id, title, pub_date, venue,
                        GROUP_CONCAT(DISTINCT BibliographicEntity_Authors.author) as authors, 
                        GROUP_CONCAT(DISTINCT BibliographicEntity_ID.id) as ids
-                FROM BibliographicEntity
-                LEFT JOIN BibliographicEntity_Authors ON BibliographicEntity.internal_id = BibliographicEntity_Authors.internal_id
-                LEFT JOIN BibliographicEntity_ID ON BibliographicEntity.internal_id = BibliographicEntity_ID.internal_id
-                WHERE BibliographicEntity.internal_id IN (
+                FROM BibliographicEntity_Metadata
+                LEFT JOIN BibliographicEntity_Authors ON BibliographicEntity_Metadata.internal_id = BibliographicEntity_Authors.internal_id
+                LEFT JOIN BibliographicEntity_ID ON BibliographicEntity_Metadata.internal_id = BibliographicEntity_ID.internal_id
+                WHERE BibliographicEntity_Metadata.internal_id IN (
                     SELECT internal_id FROM BibliographicEntity_ID WHERE id = ?
                 )
-                GROUP BY BibliographicEntity.internal_id 
+                GROUP BY BibliographicEntity_Metadata.internal_id 
             """   
             return pd.read_sql(query, con, params=(id_string,))
         
@@ -286,43 +284,43 @@ class BibliographicEntityQueryHandler(QueryHandler):
     def getAllBibliographicEntities(self) -> pd.DataFrame:
         with sqlite3.connect(self.getDbPathOrUrl()) as con:
             query = """
-                SELECT BibliographicEntity.internal_id, title, pub_date, venue,
+                SELECT BibliographicEntity_Metadata.internal_id, title, pub_date, venue,
                        GROUP_CONCAT(DISTINCT BibliographicEntity_Authors.author) as authors, 
                        GROUP_CONCAT(DISTINCT BibliographicEntity_ID.id) as ids
-                FROM BibliographicEntity
-                LEFT JOIN BibliographicEntity_Authors ON BibliographicEntity.internal_id = BibliographicEntity_Authors.internal_id
-                LEFT JOIN BibliographicEntity_ID ON BibliographicEntity.internal_id = BibliographicEntity_ID.internal_id
-                GROUP BY BibliographicEntity.internal_id
+                FROM BibliographicEntity_Metadata
+                LEFT JOIN BibliographicEntity_Authors ON BibliographicEntity_Metadata.internal_id = BibliographicEntity_Authors.internal_id
+                LEFT JOIN BibliographicEntity_ID ON BibliographicEntity_Metadata.internal_id = BibliographicEntity_ID.internal_id
+                GROUP BY BibliographicEntity_Metadata.internal_id
             """
             return pd.read_sql(query, con)
 
     def getBibliographicEntitiesWithTitle(self, title: str) -> pd.DataFrame:
         with sqlite3.connect(self.getDbPathOrUrl()) as con:
             query = """
-                SELECT BibliographicEntity.internal_id, title, pub_date, venue,
+                SELECT BibliographicEntity_Metadata.internal_id, title, pub_date, venue,
                        GROUP_CONCAT(DISTINCT BibliographicEntity_Authors.author) as authors, 
                        GROUP_CONCAT(DISTINCT BibliographicEntity_ID.id) as ids
-                FROM BibliographicEntity
-                LEFT JOIN BibliographicEntity_Authors ON BibliographicEntity.internal_id = BibliographicEntity_Authors.internal_id
-                LEFT JOIN BibliographicEntity_ID ON BibliographicEntity.internal_id = BibliographicEntity_ID.internal_id
+                FROM BibliographicEntity_Metadata
+                LEFT JOIN BibliographicEntity_Authors ON BibliographicEntity_Metadata.internal_id = BibliographicEntity_Authors.internal_id
+                LEFT JOIN BibliographicEntity_ID ON BibliographicEntity_Metadata.internal_id = BibliographicEntity_ID.internal_id
                 WHERE title LIKE ?
-                GROUP BY BibliographicEntity.internal_id
+                GROUP BY BibliographicEntity_Metadata.internal_id
             """
             return pd.read_sql(query, con, params=(f"%{title}%",))
 
     def getBibliographicEntitiesWithAuthor(self, author_name: str) -> pd.DataFrame:
         with sqlite3.connect(self.getDbPathOrUrl()) as con:
             query = """
-                SELECT BibliographicEntity.internal_id, title, pub_date, venue,
+                SELECT BibliographicEntity_Metadata.internal_id, title, pub_date, venue,
                        GROUP_CONCAT(DISTINCT BibliographicEntity_Authors.author) as authors, 
                        GROUP_CONCAT(DISTINCT BibliographicEntity_ID.id) as ids
-                FROM BibliographicEntity
-                LEFT JOIN BibliographicEntity_Authors ON BibliographicEntity.internal_id = BibliographicEntity_Authors.internal_id
-                LEFT JOIN BibliographicEntity_ID ON BibliographicEntity.internal_id = BibliographicEntity_ID.internal_id
-                WHERE BibliographicEntity.internal_id IN (
+                FROM BibliographicEntity_Metadata
+                LEFT JOIN BibliographicEntity_Authors ON BibliographicEntity_Metadata.internal_id = BibliographicEntity_Authors.internal_id
+                LEFT JOIN BibliographicEntity_ID ON BibliographicEntity_Metadata.internal_id = BibliographicEntity_ID.internal_id
+                WHERE BibliographicEntity_Metadata.internal_id IN (
                     SELECT internal_id FROM BibliographicEntity_Authors WHERE author LIKE ?
                 )
-                GROUP BY BibliographicEntity.internal_id
+                GROUP BY BibliographicEntity_Metadata.internal_id
             """
             return pd.read_sql(query, con, params=(f"%{author_name}%",))
 
@@ -338,27 +336,27 @@ class BibliographicEntityQueryHandler(QueryHandler):
                 params.append(end_date)
             
             query = f"""
-                SELECT BibliographicEntity.internal_id, title, pub_date, venue,
+                SELECT BibliographicEntity_Metadata.internal_id, title, pub_date, venue,
                        GROUP_CONCAT(DISTINCT BibliographicEntity_Authors.author) as authors, 
                        GROUP_CONCAT(DISTINCT BibliographicEntity_ID.id) as ids
-                FROM BibliographicEntity
-                LEFT JOIN BibliographicEntity_Authors ON BibliographicEntity.internal_id = BibliographicEntity_Authors.internal_id
-                LEFT JOIN BibliographicEntity_ID ON BibliographicEntity.internal_id = BibliographicEntity_ID.internal_id
+                FROM BibliographicEntity_Metadata
+                LEFT JOIN BibliographicEntity_Authors ON BibliographicEntity_Metadata.internal_id = BibliographicEntity_Authors.internal_id
+                LEFT JOIN BibliographicEntity_ID ON BibliographicEntity_Metadata.internal_id = BibliographicEntity_ID.internal_id
                 WHERE {" AND ".join(where_clauses)}
-                GROUP BY BibliographicEntity.internal_id
+                GROUP BY BibliographicEntity_Metadata.internal_id
             """
             return pd.read_sql(query, con, params=params)
 
     def getBibliographicEntitiesWithVenue(self, venue_name: str) -> pd.DataFrame:
         with sqlite3.connect(self.getDbPathOrUrl()) as con:
             query = """
-                SELECT BibliographicEntity.internal_id, title, pub_date, venue,
+                SELECT BibliographicEntity_Metadata.internal_id, title, pub_date, venue,
                        GROUP_CONCAT(DISTINCT BibliographicEntity_Authors.author) as authors, 
                        GROUP_CONCAT(DISTINCT BibliographicEntity_ID.id) as ids
-                FROM BibliographicEntity
-                LEFT JOIN BibliographicEntity_Authors ON BibliographicEntity.internal_id = BibliographicEntity_Authors.internal_id
-                LEFT JOIN BibliographicEntity_ID ON BibliographicEntity.internal_id = BibliographicEntity_ID.internal_id
+                FROM BibliographicEntity_Metadata
+                LEFT JOIN BibliographicEntity_Authors ON BibliographicEntity_Metadata.internal_id = BibliographicEntity_Authors.internal_id
+                LEFT JOIN BibliographicEntity_ID ON BibliographicEntity_Metadata.internal_id = BibliographicEntity_ID.internal_id
                 WHERE venue LIKE ?
-                GROUP BY BibliographicEntity.internal_id
+                GROUP BY BibliographicEntity_Metadata.internal_id
             """
             return pd.read_sql(query, con, params=(f"%{venue_name}%",))
