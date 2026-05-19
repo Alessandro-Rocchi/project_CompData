@@ -70,15 +70,6 @@ class CitationUploadHandler(UploadHandler):
                             "journal_sc": str,
                             "author_sc": str
                         })
-    
-        #to avoid mistake the method strip delete every blank space and avoid any syntax problem
-        citations["oci"] = citations["oci"].str.strip()
-        citations["citing"] = citations["citing"].str.strip()
-        citations["cited"] = citations["cited"].str.strip()
-        citations["creation"] = citations["creation"].str.strip()
-        citations["timespan"] = citations["timespan"].str.strip()
-        citations["journal_sc"] = citations["journal_sc"].str.strip().str.lower() 
-        citations["author_sc"] = citations["author_sc"].str.strip().str.lower()
 
         #iterate all the rows in the Dataframe to transform them in RDF triple adding to the graph the type of the resource and the relations between them. If there is a journal self citation or an author self citation, I add to the graph also this information.
         for idx, rows in citations.iterrows():
