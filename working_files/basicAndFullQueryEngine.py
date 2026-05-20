@@ -29,22 +29,24 @@ class BasicQueryEngine:
         """
         for handler in self.bibliographicEntityQuery: # you should loop through any database.
             df = handler.getById(id) # You are asking if in the relational database there is this id in a SQL table.
-            if df is not None and not df.empty: # if something is found, return it
+            if df is not None and not df.empty:
                 return self.getAllBibliographicEntities()
-            if not df.empty: # if something is found, return it
-                return self._row_to_bibliographic_obj(df.iloc[0]) # ".iloc[]" is Pandas-specific indexer. It concerns the position. It strips the table structure away from a row to convert it into a clean Python object.
+            if not df.empty:
+                return self._row_to_bibliographic_obj(df.iloc[0]) 
+            # ".iloc[]" is Pandas-specific indexer. It concerns the position. 
+            # It strips the table structure away from a row to convert it into a clean Python object.
         
         # Search in Citation Handlers (assuming an equivalent search exists)
         for handler in self.citationQuery:
             df = handler.getById(id)
             if df is not None and not df.empty:
-                return self.getAllCitations() # Still to be implemented  
+                return self.getAllCitations()
             if not df.empty:
                 return self._row_to_citation_obj(df.iloc[0])
-        return None # if nothing has been found, tell the user that the id doesn't exist.
+        return None 
+        # if nothing has been found, tell the user that the id doesn't exist.
     
     def _row_to_bibliographic_obj(self, row, bib_entity_class=BibliographicEntity) -> BibliographicEntity:
-        # Made by following Chiara's proposal for citations.
         bibliographic_entity = bib_entity_class()
        
         bibliographic_entity.title = row.get("title", "")
@@ -55,10 +57,7 @@ class BasicQueryEngine:
 
         return bibliographic_entity
 
-    # Helper method to convert a DataFrame row into a Citation object.
     def _row_to_citation_obj(self, row, citation_class=Citation) -> Citation: 
-        # citation_class is an optional parameter that allows you to specify the type of Citation. 
-        # By default, it will create a generic Citation object.
         citation = citation_class()
 
         citation.ids = [row.get("citation_id", "")]
@@ -150,7 +149,6 @@ class BasicQueryEngine:
         return all_results
    
 
-    # getAllBibliographicEntities method 11
     def getAllBibliographicEntities(self) -> list:
         all_results = [] 
         for handler in self.bibliographicEntityQuery:
@@ -160,7 +158,6 @@ class BasicQueryEngine:
                 all_results.append(entity)
         return all_results
     
-    # getBibliographicEntitiesWithTitle method 12
     def getBibliographicEntitiesWithTitle(self, title: str) -> list:
         all_results = [] 
         for handler in self.bibliographicEntityQuery:
@@ -170,7 +167,6 @@ class BasicQueryEngine:
                 all_results.append(entity)
         return all_results
     
-    # getBibliographicEntitiesWithAuthor method 13
     def getBibliographicEntitiesWithAuthor(self, author: str) -> list:
         all_results = [] 
         for handler in self.bibliographicEntityQuery:
@@ -180,7 +176,6 @@ class BasicQueryEngine:
                 all_results.append(entity)
         return all_results
     
-    # getBibliographicEntitiesWithinDate method 14
     def getBibliographicEntitiesWithinDate(self, start_date: str = None, end_date: str = None) -> list:
         all_results = []
         for handler in self.bibliographicEntityQuery:
@@ -190,7 +185,6 @@ class BasicQueryEngine:
                 all_results.append(entity)
         return all_results
     
-    # getBibliographicEntitiesWithVenue method 15
     def getBibliographicEntitiesWithVenue(self, venue: str) -> list:
         all_results = [] 
         for handler in self.bibliographicEntityQuery:
@@ -246,7 +240,8 @@ class FullQueryEngine(BasicQueryEngine):
     def __init__(self):
         super().__init__()
     
-    def getAuthorSelfCitationsByName(self, author_name: str) -> list[AuthorSelfCitation]: #* Method which takes in input an author name and returns a list of AuthorSelfCitation objects where the given author is both the citing and cited entity.
+    #* Method which takes in input an author name and returns a list of AuthorSelfCitation objects where the given author is both the citing and cited entity.
+    def getAuthorSelfCitationsByName(self, author_name: str) -> list[AuthorSelfCitation]:
         result = []
         citation_list = self.getAllAuthorSelfCitations()
         for entity in citation_list:
@@ -254,7 +249,8 @@ class FullQueryEngine(BasicQueryEngine):
                 result.append(entity)
         return result
     
-    def getJournalSelfCitationsByName(self, journal_name: str) -> list[JournalSelfCitation]: #* Method which takes in input an author name and returns a list of JournalSelfCitation objects where the given journal is both the citing and cited entity.
+    #* Method which takes in input an author name and returns a list of JournalSelfCitation objects where the given journal is both the citing and cited entity.
+    def getJournalSelfCitationsByName(self, journal_name: str) -> list[JournalSelfCitation]:
         result = []
         citation_list = self.getAllJournalSelfCitations()
         for entity in citation_list:
@@ -262,13 +258,14 @@ class FullQueryEngine(BasicQueryEngine):
                 result.append(entity)
         return result
     
-    def getCitationsOfBibEntityByTitleWithinDate(self, bib_entity_title: str, min_date: str, max_date: str) -> list[Citation]: #* Method which takes in input a bibliographic entity title and a date range and returns a list of Citation objects where the given journal is both the citing and cited entity.
-        result = []
-        citation_list = self.getCitationsWithinDate(min_date, max_date)
-        for entity in citation_list:
-            if bib_entity_title in entity.getCitedEntity().getTitle():
-                result.append(entity)
-        return result
+    #* Method which takes in input a bibliographic entity title and a date range and returns a list of Citation objects where the given journal is both the citing and cited entity.
+        def getCitationsOfBibEntityByTitleWithinDate(self, bib_entity_title: str, min_date: str, max_date: str) -> List[Citation]:
+            result = []
+            citation_list = self.getCitationsWithinDate(min_date, max_date)
+            for entity in citation_list:
+                if bib_entity_title in entity.getCitedEntity().getTitle():
+                    result.append(entity)
+            return result
     
     def getReferencesOfBibEntityByTitleWithinTimespan(self, bib_entity_title: str, min_timespan: str, max_timespan: str) -> list[Citation]: #* Method which takes in input a bibliographic entity title and a timespan range and returns a list of Citation objects where the given journal is both the citing and cited entity.
         result = []

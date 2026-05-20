@@ -2,7 +2,7 @@ from rdflib import Graph, Literal, URIRef, RDF
 import urllib.request
 from abc import abstractmethod
 from pandas import read_csv
-import sqlite3   #I ADDED THE FOLLOWINGS
+import sqlite3
 from sqlite3 import connect
 import pandas as pd
 import json
@@ -43,7 +43,7 @@ class CitationUploadHandler(UploadHandler):
 
         #Classes Resources
 
-        Identifier = URIRef(self.base_url + "identifier") #Not sure about this
+        Identifier = URIRef(self.base_url + "identifier")
         Citation = URIRef(self.base_url + "citation")
         Author_SC = URIRef(self.base_url + "author_sc")
         Journal_SC = URIRef(self.base_url + "journal_sc")
@@ -115,13 +115,12 @@ class BibliographicEntityUploadHandler(UploadHandler): # BibliographicEntityUplo
         super().__init__()
 
     def pushDataToDb(self, path: str) -> bool: #Takes in input a path for a json file and creates a relational db
-        try: #Check if the file is not corrupted or missing. There should be an "except" block later.
+        try: #Check if the file is not corrupted or missing.
             with open(path, "r", encoding="utf-8") as f: #Open the file and close it automatically even if there are errors.
                 raw_data = json.load(f) #Transform the json file into a Python object (a list of dictionaries).
 
             df = pd.json_normalize(raw_data) #Create the DataFrame (if there are nested elements, this flattens them)
 
-            #* FUNZIONA
             if "id" in df.columns:
                 # 1. Rimuove le righe dove il campo 'id' è nullo (NaN)
                 # df = df[df["id"].notna()]
@@ -135,20 +134,16 @@ class BibliographicEntityUploadHandler(UploadHandler): # BibliographicEntityUplo
 
             df["internal_id"] = ["internal_" + str(i) for i in range(len(df))] #Create the internal ID
 
-            #SUSANNA 1. Riempi i NaN nel DataFrame principale prima di estrarre le tabelle
             df = df.fillna("")
             
             #Create the tables
             bibliographic_entity = df[["internal_id", "title", "pub_date", "venue"]]
-
-            # SUSANNA HA AGGIUNTO .fillna("") alla fine 2. Per le tabelle con gli explode, usa fillna("") DOPO l'explode,
-            # perché l'explode di una lista vuota genera un NaN.
             authors_table = df[["internal_id", "author"]].explode("author").fillna("")
             id_table = df[["internal_id", "id"]].explode("id").fillna("")
 
             db_path = self.getDbPathOrUrl() #Save the path in order to retrieve it later.
 
-            with sqlite3.connect(db_path) as conn: #The "with" closes the command even with errors. Open the SQLite database in db_path or create a new one if needed.
+            with sqlite3.connect(db_path) as conn: # Open the SQLite database in db_path or create a new one if needed.
                 bibliographic_entity.to_sql("BibliographicEntity_Metadata", conn, if_exists="replace", index=False) #Manage the tables in SQL
                 authors_table.to_sql("BibliographicEntity_Authors", conn, if_exists="replace", index=False)
                 id_table.to_sql("BibliographicEntity_ID", conn, if_exists="replace", index=False)
