@@ -30,8 +30,6 @@ class BasicQueryEngine:
         for handler in self.bibliographicEntityQuery: # you should loop through any database.
             df = handler.getById(id) # You are asking if in the relational database there is this id in a SQL table.
             if df is not None and not df.empty:
-                return self.getAllBibliographicEntities()
-            if not df.empty:
                 return self._row_to_bibliographic_obj(df.iloc[0]) 
             # ".iloc[]" is Pandas-specific indexer. It concerns the position. 
             # It strips the table structure away from a row to convert it into a clean Python object.
@@ -40,8 +38,6 @@ class BasicQueryEngine:
         for handler in self.citationQuery:
             df = handler.getById(id)
             if df is not None and not df.empty:
-                return self.getAllCitations()
-            if not df.empty:
                 return self._row_to_citation_obj(df.iloc[0])
         return None 
         # if nothing has been found, tell the user that the id doesn't exist.
