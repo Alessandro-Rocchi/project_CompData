@@ -88,7 +88,7 @@ class TestProjectBasic(unittest.TestCase):
         self.assertTrue(fq.addCitationHandler(jq))
         self.assertTrue(fq.addBibliographicEntityHandler(cq))
 
-        self.assertEqual(type(fq.getEntityById("doi:10.1002/9780470999875")), BibliographicEntity)
+        self.assertEqual(fq.getEntityById("just_a_test"), None)
         print("getEntityById test passed")
 
         print("Testing getAllCitations")

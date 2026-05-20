@@ -240,12 +240,13 @@ class FullQueryEngine(BasicQueryEngine):
     def getAuthorSelfCitationsByName(self, author_name: str) -> list[AuthorSelfCitation]:
         result = []
         for handler in self.citationQuery:
-            df_cit = handler.getAuthorSelfCitations()
-            df_bib = handler.getBibliographicEntitiesWithAuthor(author_name)
-            df_merged = concat([df_cit, df_bib], axis=1, join="inner", ignore_index=True) # Merge the two DataFrames on the common internal_id column.
-            df_merged = df_merged.drop_duplicates() # Remove duplicates that may arise from the merge.
-            for index, row in df_merged.iterrows():
-                citation = self._row_to_citation_obj(row, AuthorSelfCitation)
+            for bib_handler in self.bibliographicEntityQuery: # We need both types of handlers to perform this query.
+                df_cit = handler.getAllAuthorSelfCitations()
+                df_bib = bib_handler.getBibliographicEntitiesWithAuthor(author_name)
+                df_merged = concat([df_cit, df_bib], axis=1, join="inner", ignore_index=True) # Merge the two DataFrames on the common internal_id column.
+                df_merged = df_merged.drop_duplicates() # Remove duplicates that may arise from the merge.
+                for index, row in df_merged.iterrows():
+                    citation = self._row_to_citation_obj(row, AuthorSelfCitation)
                 result.append(citation)
         return result
     
@@ -253,25 +254,40 @@ class FullQueryEngine(BasicQueryEngine):
     def getJournalSelfCitationsByName(self, journal_name: str) -> list[JournalSelfCitation]:
         result = []
         for handler in self.citationQuery:
-            df = handler.getJournalSelfCitationsByName(journal_name) # Ask the current handler for journal self-citations by name.
-            for index, row in df.iterrows():
-                citation = self._row_to_citation_obj(row, JournalSelfCitation)
-                result.append(citation)
+                for bib_handler in self.bibliographicEntityQuery: # We need both types of handlers to perform this query.
+                    df_cit = handler.getAllAuthorSelfCitations()
+                    df_bib = bib_handler.getBibliographicEntitiesWithVenue(journal_name)
+                    df_merged = concat([df_cit, df_bib], axis=1, join="inner", ignore_index=True) # Merge the two DataFrames on the common internal_id column.
+                    df_merged = df_merged.drop_duplicates() # Remove duplicates that may arise from the merge.
+                    for index, row in df_merged.iterrows():
+                        citation = self._row_to_citation_obj(row, JournalSelfCitation)
+                    result.append(citation)
         return result
     
+    
     #* Method which takes in input a bibliographic entity title and a date range and returns a list of Citation objects where the given journal is both the citing and cited entity.
-    def getCitationsOfBibEntityByTitleWithinDate(self, bib_entity_title: str, min_date: str, max_date: str) -> List[Citation]:
+    def getCitationsOfBibEntityByTitleWithinDate(self, bib_entity_title: str, min_date: str, max_date: str) -> list[Citation]:
         result = []
-        citation_list = self.getCitationsWithinDate(min_date, max_date)
-        for entity in citation_list:
-            if bib_entity_title in entity.getCitedEntity().getTitle():
-                result.append(entity)
+        for handler in self.citationQuery:
+                for bib_handler in self.bibliographicEntityQuery: # We need both types of handlers to perform this query.
+                    df_cit = handler.getCitationsWithinDate(min_date, max_date)
+                    df_bib = bib_handler.getBibliographicEntitiesWithTitle(bib_entity_title)
+                    df_merged = concat([df_cit, df_bib], axis=1, join="inner", ignore_index=True) # Merge the two DataFrames on the common internal_id column.
+                    df_merged = df_merged.drop_duplicates() # Remove duplicates that may arise from the merge.
+                    for index, row in df_merged.iterrows():
+                        citation = self._row_to_citation_obj(row, Citation)
+                    result.append(citation)
         return result
     
     def getReferencesOfBibEntityByTitleWithinTimespan(self, bib_entity_title: str, min_timespan: str, max_timespan: str) -> list[Citation]: #* Method which takes in input a bibliographic entity title and a timespan range and returns a list of Citation objects where the given journal is both the citing and cited entity.
         result = []
-        citation_list = self.getCitationsWithinTimespan(min_timespan, max_timespan)
-        for entity in citation_list:
-            if bib_entity_title in entity.getCitingEntity().getTitle():
-                result.append(entity)
+        for handler in self.citationQuery:
+                for bib_handler in self.bibliographicEntityQuery: # We need both types of handlers to perform this query.
+                    df_cit = handler.getCitationsWithinTimespan(min_timespan, max_timespan)
+                    df_bib = bib_handler.getBibliographicEntitiesWithTitle(bib_entity_title)
+                    df_merged = concat([df_cit, df_bib], axis=1, join="inner", ignore_index=True) # Merge the two DataFrames on the common internal_id column.
+                    df_merged = df_merged.drop_duplicates() # Remove duplicates that may arise from the merge.
+                    for index, row in df_merged.iterrows():
+                        citation = self._row_to_citation_obj(row, Citation)
+                    result.append(citation)
         return result
