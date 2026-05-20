@@ -1,4 +1,5 @@
 from .queryHandler import BibliographicEntityQueryHandler, CitationQueryHandler
+from pandas import concat
 from .entityClasses import *
 
 class BasicQueryEngine:
@@ -27,19 +28,15 @@ class BasicQueryEngine:
         Queries all handlers to find an entity by its ID.
         Returns the object (BibliographicEntity or Citation) or None
         """
-        for handler in self.bibliographicEntityQuery: # you should loop through any database.
-            df = handler.getById(id) # You are asking if in the relational database there is this id in a SQL table.
+        for handler in self.bibliographicEntityQuery:
+            df = handler.getById(id)
             if df is not None and not df.empty: # if something is found, return it
-                return self.getAllBibliographicEntities()
-            if not df.empty: # if something is found, return it
                 return self._row_to_bibliographic_obj(df.iloc[0]) # ".iloc[]" is Pandas-specific indexer. It concerns the position. It strips the table structure away from a row to convert it into a clean Python object.
         
         # Search in Citation Handlers (assuming an equivalent search exists)
         for handler in self.citationQuery:
             df = handler.getById(id)
             if df is not None and not df.empty:
-                return self.getAllCitations() # Still to be implemented  
-            if not df.empty:
                 return self._row_to_citation_obj(df.iloc[0])
         return None # if nothing has been found, tell the user that the id doesn't exist.
     
@@ -64,8 +61,8 @@ class BasicQueryEngine:
         citation.ids = [row.get("citation_id", "")]
         citation.creation = row.get("creation", "")
         citation.timespan = row.get("timespan", "")
-        citation.citingEntity = row.get("citing", "")
-        citation.citedEntity = row.get("cited", "")
+        citation.citingEntity = self.getEntityById(row.get("citing", ""))
+        citation.hasCitedEntity = self.getEntityById(row.get("cited", "")) # Try to get the cited entity by ID, if not found, use the raw value from the row.
 
         return citation
     
@@ -73,7 +70,6 @@ class BasicQueryEngine:
     # Returns a list of Citation objects containing all citations retrieved from all citation query handlers.
     def getAllCitations(self) -> list[Citation]:
         all_results = [] # List to store all Citation objects retrieved from all handlers.
-
         # Iterate over all citation query handlers connected to this engine.
         for handler in self.citationQuery:
             df = handler.getAllCitations() # Ask current handler for all citations as a DataFrame.
@@ -248,18 +244,23 @@ class FullQueryEngine(BasicQueryEngine):
     
     def getAuthorSelfCitationsByName(self, author_name: str) -> list[AuthorSelfCitation]: #* Method which takes in input an author name and returns a list of AuthorSelfCitation objects where the given author is both the citing and cited entity.
         result = []
-        citation_list = self.getAllAuthorSelfCitations()
-        for entity in citation_list:
-            if (author_name in entity.getCitingEntity().getAuthors()) and (author_name in entity.getCitedEntity().getAuthors()):
-                result.append(entity)
+        for handler in self.citationQuery:
+            df_cit = handler.getAuthorSelfCitations()
+            df_bib = handler.getBibliographicEntitiesWithAuthor(author_name)
+            df_merged = concat([df_cit, df_bib], axis=1, join="inner", ignore_index=True) # Merge the two DataFrames on the common internal_id column.
+            df_merged = df_merged.drop_duplicates() # Remove duplicates that may arise from the merge.
+            for index, row in df_merged.iterrows():
+                citation = self._row_to_citation_obj(row, AuthorSelfCitation)
+                result.append(citation)
         return result
     
     def getJournalSelfCitationsByName(self, journal_name: str) -> list[JournalSelfCitation]: #* Method which takes in input an author name and returns a list of JournalSelfCitation objects where the given journal is both the citing and cited entity.
         result = []
-        citation_list = self.getAllJournalSelfCitations()
-        for entity in citation_list:
-            if (journal_name == entity.getCitingEntity().getVenue()) and (journal_name == entity.getCitedEntity().getVenue()):
-                result.append(entity)
+        for handler in self.citationQuery:
+            df = handler.getJournalSelfCitationsByName(journal_name) # Ask the current handler for journal self-citations by name.
+            for index, row in df.iterrows():
+                citation = self._row_to_citation_obj(row, JournalSelfCitation)
+                result.append(citation)
         return result
     
     def getCitationsOfBibEntityByTitleWithinDate(self, bib_entity_title: str, min_date: str, max_date: str) -> list[Citation]: #* Method which takes in input a bibliographic entity title and a date range and returns a list of Citation objects where the given journal is both the citing and cited entity.

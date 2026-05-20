@@ -19,7 +19,7 @@ from pandas import DataFrame
 from working_files.uploadCitationAndBibliographic import CitationUploadHandler, BibliographicEntityUploadHandler
 from working_files.queryHandler import CitationQueryHandler, BibliographicEntityQueryHandler
 from working_files.basicAndFullQueryEngine import FullQueryEngine
-from working_files.entityClasses import Citation, BibliographicEntity, AuthorSelfCitation, JournalSelfCitation
+from working_files.entityClasses import Citation, BibliographicEntity, AuthorSelfCitation, JournalSelfCitation, IdentifiableEntity
 
 # REMEMBER: before launching the tests, please run the Blazegraph instance!
 
@@ -88,9 +88,10 @@ class TestProjectBasic(unittest.TestCase):
         self.assertTrue(fq.addCitationHandler(jq))
         self.assertTrue(fq.addBibliographicEntityHandler(cq))
 
-        self.assertEqual(fq.getEntityById("just_a_test"), None)
+        self.assertEqual(type(fq.getEntityById("doi:10.1002/9780470999875")), BibliographicEntity)
         print("getEntityById test passed")
 
+        print("Testing getAllCitations")
         r = fq.getAllCitations()
         self.assertIsInstance(r, list)
         for i in r:
@@ -121,14 +122,12 @@ class TestProjectBasic(unittest.TestCase):
             self.assertIsInstance(i, Citation)
         print("getCitationsWithinDate test passed")
 
-        
         r = fq.getAllBibliographicEntities()
         self.assertIsInstance(r, list)
         for i in r:
             self.assertIsInstance(i, BibliographicEntity)
         print("getAllBibliographicEntities test passed")
         
-
         r = fq.getBibliographicEntitiesWithTitle("Machine learning")
         self.assertIsInstance(r, list)
         for i in r:
