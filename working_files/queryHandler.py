@@ -256,6 +256,7 @@ class BibliographicEntityQueryHandler(QueryHandler):
     def __init__(self):
         super().__init__()
 
+    #NOTES ON SQL SINTAX
     #GROUP BY: take all the rows with the same internal_id and group them together
     #GROUP_CONCAT: take all the values that you are grouping and put them in one string,
     #where they are separated through a comma. It combines data from multiple rows into a single string
