@@ -59,7 +59,9 @@ class BasicQueryEngine:
         citation.ids = [row.get("citation_id", "")]
         citation.creation = row.get("creation", "")
         citation.timespan = row.get("timespan", "")
-        
+
+        # For the citing and cited entities, new BibliographicEntity objects are created 
+        # and their IDs are set based on the row data.
         citing_entity = BibliographicEntity()
         citing_entity.ids = [row.get("citing", "")]
 
