@@ -119,7 +119,14 @@ class BibliographicEntityUploadHandler(UploadHandler): # BibliographicEntityUplo
             with open(path, "r", encoding="utf-8") as f: #Open the file and close it automatically even if there are errors.
                 raw_data = json.load(f) #Transform the json file into a Python object (a list of dictionaries).
 
-            df = pd.json_normalize(raw_data) #Create the DataFrame (if there are nested elements, this flattens them).
+            df = pd.json_normalize(raw_data) #Create the DataFrame (if there are nested elements, this flattens them)
+
+            if "id" in df.columns: # Check if the id is missing, in case it skips the JSON object entirely
+                df = df = [
+                    df["id"].notna() and
+                    (df["id"].astype(str) != "") and
+                    (df["id"].str.len() > 0)
+                ]
 
             df["internal_id"] = ["internal_" + str(i) for i in range(len(df))] #Create the internal ID
 
@@ -133,7 +140,6 @@ class BibliographicEntityUploadHandler(UploadHandler): # BibliographicEntityUplo
             # perché l'explode di una lista vuota genera un NaN.
             authors_table = df[["internal_id", "author"]].explode("author").fillna("")
             id_table = df[["internal_id", "id"]].explode("id").fillna("")
-            id_table = id_table[id_table["id"] != ""] # Prevent crushes if id is missing. It removes the rows in which the ID is an empty string
 
             db_path = self.getDbPathOrUrl() #Save the path in order to retrieve it later.
 
