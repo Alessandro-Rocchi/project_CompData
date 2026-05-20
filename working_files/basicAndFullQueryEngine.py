@@ -28,7 +28,7 @@ class BasicQueryEngine:
         Queries all handlers to find an entity by its ID.
         Returns the object (BibliographicEntity or Citation) or None
         """
-        for handler in self.bibliographicEntityQuery: # you should loop through any database.
+        for handler in self.bibliographicEntityQuery: # It loops through any database.
             df = handler.getById(id) # You are asking if in the relational database there is this id in a SQL table.
             if df is not None and not df.empty:
                 return self._row_to_bibliographic_obj(df.iloc[0]) 
@@ -43,7 +43,7 @@ class BasicQueryEngine:
         return None 
         # if nothing has been found, tell the user that the id doesn't exist.
     
-    def _row_to_bibliographic_obj(self, row, bib_entity_class=BibliographicEntity) -> BibliographicEntity:
+    def _row_to_bibliographic_obj(self, row, bib_entity_class=BibliographicEntity) -> BibliographicEntity: # Transform the rows of Dataframe into strings or lists.
         bibliographic_entity = bib_entity_class()
        
         bibliographic_entity.title = row.get("title", "")
