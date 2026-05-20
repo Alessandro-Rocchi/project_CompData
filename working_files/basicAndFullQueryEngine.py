@@ -259,13 +259,13 @@ class FullQueryEngine(BasicQueryEngine):
         return result
     
     #* Method which takes in input a bibliographic entity title and a date range and returns a list of Citation objects where the given journal is both the citing and cited entity.
-        def getCitationsOfBibEntityByTitleWithinDate(self, bib_entity_title: str, min_date: str, max_date: str) -> List[Citation]:
-            result = []
-            citation_list = self.getCitationsWithinDate(min_date, max_date)
-            for entity in citation_list:
-                if bib_entity_title in entity.getCitedEntity().getTitle():
-                    result.append(entity)
-            return result
+    def getCitationsOfBibEntityByTitleWithinDate(self, bib_entity_title: str, min_date: str, max_date: str) -> List[Citation]:
+        result = []
+        citation_list = self.getCitationsWithinDate(min_date, max_date)
+        for entity in citation_list:
+            if bib_entity_title in entity.getCitedEntity().getTitle():
+                result.append(entity)
+        return result
     
     def getReferencesOfBibEntityByTitleWithinTimespan(self, bib_entity_title: str, min_timespan: str, max_timespan: str) -> list[Citation]: #* Method which takes in input a bibliographic entity title and a timespan range and returns a list of Citation objects where the given journal is both the citing and cited entity.
         result = []
