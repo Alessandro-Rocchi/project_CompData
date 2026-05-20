@@ -121,12 +121,13 @@ class BibliographicEntityUploadHandler(UploadHandler): # BibliographicEntityUplo
 
             df = pd.json_normalize(raw_data) #Create the DataFrame (if there are nested elements, this flattens them)
 
-            if "id" in df.columns: # Check if the id is missing, in case it skips the JSON object entirely
-                df = df = [
-                    df["id"].notna() and
-                    (df["id"].astype(str) != "") and
-                    (df["id"].str.len() > 0)
-                ]
+            #* FUNZIONA
+            if "id" in df.columns:
+                # 1. Rimuove le righe dove il campo 'id' è nullo (NaN)
+                df = df[df["id"].notna()]
+                
+                # 2. Tiene solo i record in cui 'id' è una lista e contiene almeno un elemento
+                df = df[df["id"].apply(lambda x: isinstance(x, list) and len(x) > 0)]
 
             df["internal_id"] = ["internal_" + str(i) for i in range(len(df))] #Create the internal ID
 
