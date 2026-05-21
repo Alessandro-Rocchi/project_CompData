@@ -43,31 +43,31 @@ class BasicQueryEngine:
         # if nothing has been found, tell the user that the id doesn't exist.
     
     def _row_to_bibliographic_obj(self, row) -> BibliographicEntity:
-        entity = BibliographicEntity()
+        entity = BibliographicEntity() # It creates an object of the class BibliographicEntity that will be returned at the end
         entity.title = row.get("title", "")
         entity.publicationDate = row.get("pub_date", "")
         entity.venue = row.get("venue", "")
         
-        authors_raw = str(row.get("authors", ""))
-        row_ids = str(row.get('ids', ""))
+        authors_raw = str(row.get("authors", "")) # It converts in a string the list of authors
+        row_ids = str(row.get('ids', "")) # It converts in a string the list of ids.
 
         clean_author_list = []
         clean_ids_list = []
 
-        if authors_raw and authors_raw != "None":
-            splitted_authors = authors_raw.split(';')
+        if authors_raw and authors_raw != "None": # If there are authors
+            splitted_authors = authors_raw.split(';') # It splits the string at the ";"
             
-            author_stripped = [author.strip() for author in splitted_authors if author.strip()]
+            author_stripped = [author.strip() for author in splitted_authors if author.strip()] # It loops over all the authors splitted, it cuts any additional space and checks if a section is just blank space (in case ignores it.)
             
-            clean_author_list = list(set(author_stripped))
+            clean_author_list = list(set(author_stripped)) # It transforms the list into a set for avoiding duplicates and then it retransforms it again in a list
 
-            if row_ids and row_ids != "None":
+            if row_ids and row_ids != "None": # Same thing as for the authors
                 ids_splitted = row_ids.split(';')
                 ids_stripped = [id_str.strip() for id_str in ids_splitted if id_str.strip()]
                 clean_ids_list = list(set(ids_stripped))
 
-        entity.authors = clean_author_list
-        entity.ids = clean_ids_list
+        entity.authors = clean_author_list # It takes the list that we have just made with clean names and it drops that into the authors slot.
+        entity.ids = clean_ids_list # Same thing as before with ids
         return entity
 
     def _row_to_citation_obj(self, row, citation_class=Citation) -> Citation: 
