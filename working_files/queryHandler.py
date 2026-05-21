@@ -269,8 +269,8 @@ class BibliographicEntityQueryHandler(QueryHandler):
         with sqlite3.connect(self.getDbPathOrUrl()) as con:
             query = """
                 SELECT BibliographicEntity_Metadata.internal_id, title, pub_date, venue,
-                       GROUP_CONCAT(DISTINCT BibliographicEntity_Authors.author) as authors, 
-                       GROUP_CONCAT(DISTINCT BibliographicEntity_ID.id) as ids
+                       GROUP_CONCAT(DISTINCT BibliographicEntity_Authors.author, ';') as authors, 
+                       GROUP_CONCAT(DISTINCT BibliographicEntity_ID.id, ';') as ids
                 FROM BibliographicEntity_Metadata
                 LEFT JOIN BibliographicEntity_Authors ON BibliographicEntity_Metadata.internal_id = BibliographicEntity_Authors.internal_id
                 LEFT JOIN BibliographicEntity_ID ON BibliographicEntity_Metadata.internal_id = BibliographicEntity_ID.internal_id
@@ -286,8 +286,8 @@ class BibliographicEntityQueryHandler(QueryHandler):
         with sqlite3.connect(self.getDbPathOrUrl()) as con:
             query = """
                 SELECT BibliographicEntity_Metadata.internal_id, title, pub_date, venue,
-                       GROUP_CONCAT(DISTINCT BibliographicEntity_Authors.author) as authors, 
-                       GROUP_CONCAT(DISTINCT BibliographicEntity_ID.id) as ids
+                       GROUP_CONCAT(DISTINCT BibliographicEntity_Authors.author, ';') as authors, 
+                       GROUP_CONCAT(DISTINCT BibliographicEntity_ID.id, ';') as ids
                 FROM BibliographicEntity_Metadata
                 LEFT JOIN BibliographicEntity_Authors ON BibliographicEntity_Metadata.internal_id = BibliographicEntity_Authors.internal_id
                 LEFT JOIN BibliographicEntity_ID ON BibliographicEntity_Metadata.internal_id = BibliographicEntity_ID.internal_id
@@ -299,8 +299,8 @@ class BibliographicEntityQueryHandler(QueryHandler):
         with sqlite3.connect(self.getDbPathOrUrl()) as con:
             query = """
                 SELECT BibliographicEntity_Metadata.internal_id, title, pub_date, venue,
-                       GROUP_CONCAT(DISTINCT BibliographicEntity_Authors.author) as authors, 
-                       GROUP_CONCAT(DISTINCT BibliographicEntity_ID.id) as ids
+                       GROUP_CONCAT(DISTINCT BibliographicEntity_Authors.author, ';') as authors, 
+                       GROUP_CONCAT(DISTINCT BibliographicEntity_ID.id, ';') as ids
                 FROM BibliographicEntity_Metadata
                 LEFT JOIN BibliographicEntity_Authors ON BibliographicEntity_Metadata.internal_id = BibliographicEntity_Authors.internal_id
                 LEFT JOIN BibliographicEntity_ID ON BibliographicEntity_Metadata.internal_id = BibliographicEntity_ID.internal_id
@@ -313,8 +313,8 @@ class BibliographicEntityQueryHandler(QueryHandler):
         with sqlite3.connect(self.getDbPathOrUrl()) as con:
             query = """
                 SELECT BibliographicEntity_Metadata.internal_id, title, pub_date, venue,
-                       GROUP_CONCAT(DISTINCT BibliographicEntity_Authors.author) as authors, 
-                       GROUP_CONCAT(DISTINCT BibliographicEntity_ID.id) as ids
+                       GROUP_CONCAT(DISTINCT BibliographicEntity_Authors.author, ';') as authors, 
+                       GROUP_CONCAT(DISTINCT BibliographicEntity_ID.id, ';') as ids
                 FROM BibliographicEntity_Metadata
                 LEFT JOIN BibliographicEntity_Authors ON BibliographicEntity_Metadata.internal_id = BibliographicEntity_Authors.internal_id
                 LEFT JOIN BibliographicEntity_ID ON BibliographicEntity_Metadata.internal_id = BibliographicEntity_ID.internal_id
@@ -338,8 +338,8 @@ class BibliographicEntityQueryHandler(QueryHandler):
             
             query = f"""
                 SELECT BibliographicEntity_Metadata.internal_id, title, pub_date, venue,
-                       GROUP_CONCAT(DISTINCT BibliographicEntity_Authors.author) as authors, 
-                       GROUP_CONCAT(DISTINCT BibliographicEntity_ID.id) as ids
+                       GROUP_CONCAT(DISTINCT BibliographicEntity_Authors.author, ';') as authors, 
+                       GROUP_CONCAT(DISTINCT BibliographicEntity_ID.id, ';') as ids
                 FROM BibliographicEntity_Metadata
                 LEFT JOIN BibliographicEntity_Authors ON BibliographicEntity_Metadata.internal_id = BibliographicEntity_Authors.internal_id
                 LEFT JOIN BibliographicEntity_ID ON BibliographicEntity_Metadata.internal_id = BibliographicEntity_ID.internal_id
@@ -352,8 +352,8 @@ class BibliographicEntityQueryHandler(QueryHandler):
         with sqlite3.connect(self.getDbPathOrUrl()) as con:
             query = """
                 SELECT BibliographicEntity_Metadata.internal_id, title, pub_date, venue,
-                       GROUP_CONCAT(DISTINCT BibliographicEntity_Authors.author) as authors, 
-                       GROUP_CONCAT(DISTINCT BibliographicEntity_ID.id) as ids
+                       GROUP_CONCAT(DISTINCT BibliographicEntity_Authors.author, ';') as authors, 
+                       GROUP_CONCAT(DISTINCT BibliographicEntity_ID.id, ';') as ids
                 FROM BibliographicEntity_Metadata
                 LEFT JOIN BibliographicEntity_Authors ON BibliographicEntity_Metadata.internal_id = BibliographicEntity_Authors.internal_id
                 LEFT JOIN BibliographicEntity_ID ON BibliographicEntity_Metadata.internal_id = BibliographicEntity_ID.internal_id

@@ -42,16 +42,20 @@ class BasicQueryEngine:
         return None 
         # if nothing has been found, tell the user that the id doesn't exist.
     
-    def _row_to_bibliographic_obj(self, row, bib_entity_class=BibliographicEntity) -> BibliographicEntity: # Transform the rows of Dataframe into strings or lists.
-        bibliographic_entity = bib_entity_class()
-       
-        bibliographic_entity.title = row.get("title", "")
-        bibliographic_entity.publicationDate = row.get("pub_date", "")
-        bibliographic_entity.venue = row.get("venue", "")
-        bibliographic_entity.authors = row.get("authors", "").split(",") if row.get("authors") else [] # Due to the fact that authors are in another table and they can be more than one, the result must be a list.
-        bibliographic_entity.ids = row.get("ids", "").split(",") if row.get("ids") else [] #Same thing as for the authors.
-
-        return bibliographic_entity
+    def _row_to_bibliographic_obj(self, row) -> BibliographicEntity:
+        entity = BibliographicEntity()
+        entity.title = row.get("title", "")
+        entity.publicationDate = row.get("pub_date", "")
+        entity.venue = row.get("venue", "")
+        
+        # Splitta per punto e virgola sia autori che ID
+        authors_raw = row.get("authors", "")
+        entity.authors = [a.strip() for a in authors_raw.split(";")] if authors_raw else []
+        
+        ids_raw = row.get("ids", "")
+        entity.ids = [i.strip() for i in ids_raw.split(";")] if ids_raw else []
+        
+        return entity
 
     def _row_to_citation_obj(self, row, citation_class=Citation) -> Citation: 
         citation = citation_class()
