@@ -48,32 +48,26 @@ class BasicQueryEngine:
         entity.publicationDate = row.get("pub_date", "")
         entity.venue = row.get("venue", "")
         
-        # Splitta per punto e virgola sia autori che ID
         authors_raw = str(row.get("authors", ""))
-        ids_grezzi = str(row.get('ids', ""))
+        row_ids = str(row.get('ids', ""))
 
-        lista_autori_pulita = []
-        lista_ids_pulita = []
+        clean_author_list = []
+        clean_ids_list = []
 
-        # --- PULIZIA AUTORI ---
         if authors_raw and authors_raw != "None":
-            # 1. Dividiamo usando il separatore forte
-            pezzi_autori = authors_raw.split(';')
+            splitted_authors = authors_raw.split(';')
             
-            # 2. Puliamo gli spazi vuoti extra
-            autori_strippati = [autore.strip() for autore in pezzi_autori if autore.strip()]
+            author_stripped = [author.strip() for author in splitted_authors if author.strip()]
             
-            # 3. LA MAGIA: Convertiamo in 'set' per distruggere i doppioni, poi torniamo a 'list'
-            lista_autori_pulita = list(set(autori_strippati))
+            clean_author_list = list(set(author_stripped))
 
-        # --- PULIZIA IDs ---
-            if ids_grezzi and ids_grezzi != "None":
-                pezzi_ids = ids_grezzi.split(';')
-                ids_strippati = [id_str.strip() for id_str in pezzi_ids if id_str.strip()]
-                lista_ids_pulita = list(set(ids_strippati))
+            if row_ids and row_ids != "None":
+                ids_splitted = row_ids.split(';')
+                ids_stripped = [id_str.strip() for id_str in ids_splitted if id_str.strip()]
+                clean_ids_list = list(set(ids_stripped))
 
-        entity.authors = lista_autori_pulita
-        entity.ids = lista_ids_pulita
+        entity.authors = clean_author_list
+        entity.ids = clean_ids_list
         return entity
 
     def _row_to_citation_obj(self, row, citation_class=Citation) -> Citation: 
