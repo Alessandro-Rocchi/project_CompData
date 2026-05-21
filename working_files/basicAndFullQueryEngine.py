@@ -195,47 +195,6 @@ class BasicQueryEngine:
                 entity = self._row_to_bibliographic_obj(row)
                 all_results.append(entity)
         return all_results
-    
-    
-    # def row_to_bibliographic_obj(self, row, handler) -> BibliographicEntity:
-    #     # helper that creates specific Bibliographic objects and fetch related IDs/authors
-    #     internal_id = row["internal_id"]
-    #     entity_type = str(row.get('type', '')).lower()
-
-    #     # Map the correct type (Journal, Book, etc.)
-    #     if "journal" in entity_type:
-    #         entity = JournalArticle()
-    #     elif "book" in entity_type:
-    #         entity = Book()
-    #     else:
-    #         entity = BibliographicEntity()
-
-    #     entity.title = row.get("title", "")
-    #     entity.publicationDate = row.get("pub_date", "")
-    #     entity.venue = row.get("venue", "")
-
-    #     # Fetch external IDs and authors from the handler that found this record
-    #     entity.ids = getIdsByInternalId(internal_id)["id"].tolist()
-    #     entity.authors = handler.getAuthorsByInternalId(internal_id)["author"].tolist()
-
-    #     return entity
-    
-    # def row_to_citation_obj(self, row) -> Citation:
-    #     cit_type = str(row.get('type', '')).lower()
-
-    #     if "journal" in cit_type:
-    #         cit = JournalSelfCitation()
-    #     elif "author" in cit_type:
-    #         cit = AuthorSelfCitation()
-    #     else:
-    #         cit = Citation()
-        
-    #     # Mapping IDs and attributes (ADJUST KEYS BASED ON OUR DB SCHEMA)
-    #     cit.ids = [row.get("citation_id", "")]
-    #     cit.creation = row.get('creation', "")
-    #     cit.timespan = row.get('timespan', "")
-    #     return cit
-
 
 
 class FullQueryEngine(BasicQueryEngine):
