@@ -33,7 +33,7 @@ class TestProjectBasic(unittest.TestCase):
     citation = "data" + sep + "dh_citations.csv"
     bib_entity = "data" + sep + "dh_metadata.json"
     relational = "." + sep + "relational.db"
-    graph = "http://10.146.238.165:9999/blazegraph/sparql"
+    graph = "http://172.20.10.2:9999/blazegraph/sparql"
 
     def test_01_CitationUploadHandler(self):
         u = CitationUploadHandler()
@@ -140,7 +140,6 @@ class TestProjectBasic(unittest.TestCase):
             self.assertIsInstance(i, BibliographicEntity)
         print("getBibliographicEntitiesWithAuthor test passed")
 
-        #! Chiedere al Prof perché c'è incongruenza tra nomi prima si chiamava getBibliographicEntitiesWithinPublicationDate e ora  getBibliographicEntitiesWithinDate 
         r = fq.getBibliographicEntitiesWithinDate("2022","2024")
         self.assertIsInstance(r, list)
         for i in r:
