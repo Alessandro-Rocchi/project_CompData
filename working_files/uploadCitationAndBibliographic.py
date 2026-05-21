@@ -123,14 +123,12 @@ class BibliographicEntityUploadHandler(UploadHandler): # BibliographicEntityUplo
 
             if "id" in df.columns:
                 # 1. Rimuove le righe dove il campo 'id' è nullo (NaN)
-                # df = df[df["id"].notna()]
                 df = df.dropna(subset=["id"])
                 
                 # 2. Tiene solo i record in cui 'id' è una lista e contiene almeno un elemento
-                # df = df[df["id"].apply(lambda x: isinstance(x, list) and len(x) > 0)]
+                # Note on .explode: it is from Pandas and it flattens the lists. It gives a dedicated row to any list element with the same index!.
                 df_exploded = df.explode("id")
                 df_exploded = df_exploded.dropna(subset=["id"])
-                # df = df_exploded.groupby(df_exploded.index).agg({"id": list}) OPTIONAL
 
             df["internal_id"] = ["internal_" + str(i) for i in range(len(df))] #Create the internal ID
 
