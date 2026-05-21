@@ -49,12 +49,31 @@ class BasicQueryEngine:
         entity.venue = row.get("venue", "")
         
         # Splitta per punto e virgola sia autori che ID
-        authors_raw = row.get("authors", "")
-        entity.authors = [a.strip() for a in authors_raw.split(";")] if authors_raw else []
-        
-        ids_raw = row.get("ids", "")
-        entity.ids = [i.strip() for i in ids_raw.split(";")] if ids_raw else []
-        
+        authors_raw = str(row.get("authors", ""))
+        ids_grezzi = str(row.get('ids', ""))
+
+        lista_autori_pulita = []
+        lista_ids_pulita = []
+
+        # --- PULIZIA AUTORI ---
+        if authors_raw and authors_raw != "None":
+            # 1. Dividiamo usando il separatore forte
+            pezzi_autori = authors_raw.split(';')
+            
+            # 2. Puliamo gli spazi vuoti extra
+            autori_strippati = [autore.strip() for autore in pezzi_autori if autore.strip()]
+            
+            # 3. LA MAGIA: Convertiamo in 'set' per distruggere i doppioni, poi torniamo a 'list'
+            lista_autori_pulita = list(set(autori_strippati))
+
+        # --- PULIZIA IDs ---
+            if ids_grezzi and ids_grezzi != "None":
+                pezzi_ids = ids_grezzi.split(';')
+                ids_strippati = [id_str.strip() for id_str in pezzi_ids if id_str.strip()]
+                lista_ids_pulita = list(set(ids_strippati))
+
+        entity.authors = lista_autori_pulita
+        entity.ids = lista_ids_pulita
         return entity
 
     def _row_to_citation_obj(self, row, citation_class=Citation) -> Citation: 
@@ -212,6 +231,7 @@ class FullQueryEngine(BasicQueryEngine):
         all_author_citations = self.getAllAuthorSelfCitations()
         bib_entity_with_authors = self.getBibliographicEntitiesWithAuthor(author_name)
         for bib in bib_entity_with_authors:
+            print(bib.getAuthors())
             valid_bib_entity[bib.getIds()[0]] = bib
         
         if not valid_bib_entity:
@@ -301,7 +321,7 @@ class FullQueryEngine(BasicQueryEngine):
         for citation in all_citation:
 
             if citation.getCitingEntity().getIds()[0] in valid_bib_entity:
-                full_citing = valid_bib_entity[citation.getCitedEntity().getIds()[0]]
+                full_citing = valid_bib_entity[citation.getCitingEntity().getIds()[0]]
 
                 if citation.getCitedEntity().getIds()[0] not in tmp_cache:
                     tmp_cache[citation.getCitedEntity().getIds()[0]] = self.getEntityById(citation.getCitedEntity().getIds()[0])

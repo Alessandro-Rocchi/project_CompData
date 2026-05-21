@@ -33,7 +33,7 @@ class TestProjectBasic(unittest.TestCase):
     citation = "data" + sep + "dh_citations.csv"
     bib_entity = "data" + sep + "dh_metadata.json"
     relational = "." + sep + "relational.db"
-    graph = "http://localhost:9999/blazegraph/sparql"
+    graph = "http://10.146.238.165:9999/blazegraph/sparql"
 
     def test_01_CitationUploadHandler(self):
         u = CitationUploadHandler()
@@ -156,7 +156,7 @@ class TestProjectBasic(unittest.TestCase):
         # FullQueryEngine
         # -----
 
-        r = fq.getAuthorSelfCitationsByName("Matt")
+        r = fq.getAuthorSelfCitationsByName("Mühleder")
         self.assertIsInstance(r, list)
         for i in r:
             self.assertIsInstance(i, AuthorSelfCitation)
