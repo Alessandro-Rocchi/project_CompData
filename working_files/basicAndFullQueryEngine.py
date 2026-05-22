@@ -61,10 +61,10 @@ class BasicQueryEngine:
             
             clean_author_list = list(set(author_stripped)) # Thanks to the passage throuh a set, the final list will not have duplicates
 
-            if row_ids and row_ids != "None":
-                ids_splitted = row_ids.split(';')
-                ids_stripped = [id_str.strip() for id_str in ids_splitted if id_str.strip()]
-                clean_ids_list = list(set(ids_stripped))
+        if row_ids and row_ids != "None":
+            ids_splitted = row_ids.split(';')
+            ids_stripped = [id_str.strip() for id_str in ids_splitted if id_str.strip()]
+            clean_ids_list = list(set(ids_stripped))
 
         entity.authors = clean_author_list # In returning the authors of the entity it will use the clean_author_list
         entity.ids = clean_ids_list
