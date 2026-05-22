@@ -166,9 +166,20 @@ class BasicQueryEngine:
                 all_results.append(citation)
 
         return all_results
+    
+    # === GLOBAL LOGIC OF THE FOLLOWING METHODS===
+    # 1. Initialize an empty list ("all_results") to accumulate the final objects.
+    # 2. Iterate through all connected database handlers in "self.bibliographicEntityQuery".
+    # 3. Call the corresponding QueryHandler method to execute the SQL query and get a DataFrame.
+    # 4. Iterate through the rows of the DataFrame using ".iterrows()".
+    # 5. Convert each row into a clean "BibliographicEntity" object using "_row_to_bibliographic_obj".
+    # 6. Append the entity object to the "all_results" list.
+    # 7. Return the final "all_results" list.
    
 
     def getAllBibliographicEntities(self) -> list[BibliographicEntity]:
+        # Takes: no arguments.
+        # Returns: a list of BibliographicEntity objects representing all publications across all databases.
         all_results = [] 
         for handler in self.bibliographicEntityQuery:
             df = handler.getAllBibliographicEntities()
@@ -178,6 +189,8 @@ class BasicQueryEngine:
         return all_results
     
     def getBibliographicEntitiesWithTitle(self, title: str) -> list[BibliographicEntity]:
+        # Takes: a string representing the publication title (or part of it) to search for.
+        # Returns: a list of BibliographicEntity objects whose titles match the search term.
         all_results = [] 
         for handler in self.bibliographicEntityQuery:
             df = handler.getBibliographicEntitiesWithTitle(title)
@@ -187,6 +200,8 @@ class BasicQueryEngine:
         return all_results
     
     def getBibliographicEntitiesWithAuthor(self, author: str) -> list[BibliographicEntity]:
+        # Takes: a string representing the author's name (full or partial) to search for.
+        # Returns: a list of BibliographicEntity objects that include the specified author.
         all_results = [] 
         for handler in self.bibliographicEntityQuery:
             df = handler.getBibliographicEntitiesWithAuthor(author)
@@ -196,6 +211,8 @@ class BasicQueryEngine:
         return all_results
     
     def getBibliographicEntitiesWithinDate(self, start_date: str = None, end_date: str = None) -> list[BibliographicEntity]:
+        # Takes: optional start and end date strings defining a timeframe.
+        # Returns: a list of BibliographicEntity objects published within the specified date range.
         all_results = []
         for handler in self.bibliographicEntityQuery:
             df = handler.getBibliographicEntitiesWithinPublicationDate(start_date, end_date)
@@ -205,6 +222,8 @@ class BasicQueryEngine:
         return all_results
     
     def getBibliographicEntitiesWithVenue(self, venue: str) -> list[BibliographicEntity]:
+        # Takes: a string representing the venue name to search for.
+        # Returns: a list of BibliographicEntity objects published in the matched venue.
         all_results = [] 
         for handler in self.bibliographicEntityQuery:
             df = handler.getBibliographicEntitiesWithVenue(venue)
