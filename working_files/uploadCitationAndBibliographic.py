@@ -122,10 +122,10 @@ class BibliographicEntityUploadHandler(UploadHandler): # BibliographicEntityUplo
             df = pd.json_normalize(raw_data) #Create the DataFrame (if there are nested elements, this flattens them)
 
             if "id" in df.columns:
-                # 1. Rimuove le righe dove il campo 'id' è nullo (NaN)
+                # Remove rows where 'id' is NaN or empty, and then explode the 'id' column to create a new row for each element in the list. 
                 df = df.dropna(subset=["id"])
                 
-                # 2. Tiene solo i record in cui 'id' è una lista e contiene almeno un elemento
+                # Keep only rows where 'id' is not an empty string, and then explode the 'id' column to create a new row for each element in the list. 
                 # Note on .explode: it is from Pandas and it flattens the lists. It gives a dedicated row to any list element with the same index!.
                 df_exploded = df.explode("id")
                 df_exploded = df_exploded.dropna(subset=["id"])
