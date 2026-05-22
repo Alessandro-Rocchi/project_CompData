@@ -1,28 +1,31 @@
-# Project CompData
+# Project Computational Managment of Data by Sequels & Sparkles
 
-To install the required dependencies and make everything work with uv, follow this procedure:
+## Prerequisites
 
-1. Navigate through the folder you want to clone the github repository and open it in a terminal
-2. Use the following command:
+Before starting, ensure you have the following installed on your system (Windows, macOS, or Linux):
 
-    ```bash
-    git clone https://github.com/Alessandro-Rocchi/project_CompData.git
-    ```
+* **[Git](https://git-scm.com/)**
+* **[uv](https://github.com/astral-sh/uv)**
 
-3. Check that the command clone everything from the repository
-4. Run the command:
+### Installation & Setup
 
-   ```bash
-   
-   git pull
-   ```
+**1. Clone the repository** Open your command line interface (**Terminal** on macOS/Linux, **Command Prompt** or **PowerShell** on Windows) in the folder where you want to download the project, and run:
 
-5. Then run the command to install all dependencies needed:
+```text
+git clone [https://github.com/Alessandro-Rocchi/project_CompData.git](https://github.com/Alessandro-Rocchi/project_CompData.git)
+```
 
-   ```bash
-   uv run main.py
-   ```
+**2. Navigate into the folder and update** Move into the newly created directory and ensure you have the latest version of the code. These commands work identically across all operating systems:
 
-This will install all the necessary dependencies and run the main.py file, allowing you to use the project as intended. Make sure you have uv installed on your system before running the command.
+```text
+cd project_CompData
+git pull
+```
 
-**Have fun!**
+**3. Run the project** Execute the following command to automatically install all the necessary dependencies and run the main script:
+
+```text
+uv run main.py
+```
+
+Have fun!
