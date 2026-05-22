@@ -42,31 +42,31 @@ class BasicQueryEngine:
         return None 
         # if nothing has been found, tell the user that the id doesn't exist.
     
-    def _row_to_bibliographic_obj(self, row) -> BibliographicEntity:
-        entity = BibliographicEntity()
-        entity.title = row.get("title", "")
+    def _row_to_bibliographic_obj(self, row) -> BibliographicEntity: # Transorm the row of the DataFrame into a list
+        entity = BibliographicEntity() 
+        entity.title = row.get("title", "") 
         entity.publicationDate = row.get("pub_date", "")
         entity.venue = row.get("venue", "")
         
-        authors_raw = str(row.get("authors", ""))
+        authors_raw = str(row.get("authors", "")) # Due to the fact that authors are in a list, this transform the list in a string
         row_ids = str(row.get('ids', ""))
 
         clean_author_list = []
         clean_ids_list = []
 
-        if authors_raw and authors_raw != "None":
-            splitted_authors = authors_raw.split(';')
+        if authors_raw and authors_raw != "None": 
+            splitted_authors = authors_raw.split(';') # It splits the string formed by the authors when it encounters a ";"
             
-            author_stripped = [author.strip() for author in splitted_authors if author.strip()]
+            author_stripped = [author.strip() for author in splitted_authors if author.strip()] # It puts each author into a new list
             
-            clean_author_list = list(set(author_stripped))
+            clean_author_list = list(set(author_stripped)) # Thanks to the passage throuh a set, the final list will not have duplicates
 
             if row_ids and row_ids != "None":
                 ids_splitted = row_ids.split(';')
                 ids_stripped = [id_str.strip() for id_str in ids_splitted if id_str.strip()]
                 clean_ids_list = list(set(ids_stripped))
 
-        entity.authors = clean_author_list
+        entity.authors = clean_author_list # In returning the authors of the entity it will use the clean_author_list
         entity.ids = clean_ids_list
         return entity
 
