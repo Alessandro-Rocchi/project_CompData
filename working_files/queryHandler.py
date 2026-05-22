@@ -256,16 +256,17 @@ class BibliographicEntityQueryHandler(QueryHandler):
     def __init__(self):
         super().__init__()
 
-    #NOTES ON SQL SINTAX
-    #GROUP BY: take all the rows with the same internal_id and group them together
-    #GROUP_CONCAT: take all the values that you are grouping and put them in one string,
-    #where they are separated through a comma. It combines data from multiple rows into a single string
-    #DISTINCT: before putting a value in a string, check if there are duplicates
-    #IN(SELECT...): check what is the internal_id of the rows with such id/author and apply the
-    #query on the rows with such internal id/author
+    # === GLOBAL SQL LOGIC NOTES ===
+    # GROUP BY: Collapses rows sharing the same 'internal_id' into a single publication record.
+    # GROUP_CONCAT(col, ';'): Merges values from colliding rows into a single string separated by ';'.
+    # Note on duplicates: DISTINCT was omitted inside GROUP_CONCAT to prevent syntax crashes.
 
 
     def getById(self, id_string: str) -> pd.DataFrame:
+        # Takes: a string representing an external identifier (e.g., DOI, ISBN).
+        # Returns: a pandas DataFrame with 1 row containing the matched publication metadata.
+        # SUBQUERY WHY: Isolates the internal_id first so the outer query can aggregate 
+        # all identifiers without filtering them out.
         with sqlite3.connect(self.getDbPathOrUrl()) as con:
             query = """
                 SELECT BibliographicEntity_Metadata.internal_id, title, pub_date, venue,
@@ -283,6 +284,9 @@ class BibliographicEntityQueryHandler(QueryHandler):
         
         
     def getAllBibliographicEntities(self) -> pd.DataFrame:
+        # Takes: no arguments.
+        # Returns: a pandas DataFrame containing all bibliographic entities stored 
+        # in the relational DB.
         with sqlite3.connect(self.getDbPathOrUrl()) as con:
             query = """
                 SELECT BibliographicEntity_Metadata.internal_id, title, pub_date, venue,
@@ -296,6 +300,8 @@ class BibliographicEntityQueryHandler(QueryHandler):
             return pd.read_sql(query, con)
 
     def getBibliographicEntitiesWithTitle(self, title: str) -> pd.DataFrame:
+        # Takes: a string text to search within the titles.
+        # Returns: a pandas DataFrame with all publications whose title matches the partial text.
         with sqlite3.connect(self.getDbPathOrUrl()) as con:
             query = """
                 SELECT BibliographicEntity_Metadata.internal_id, title, pub_date, venue,
@@ -310,6 +316,10 @@ class BibliographicEntityQueryHandler(QueryHandler):
             return pd.read_sql(query, con, params=(f"%{title}%",))
 
     def getBibliographicEntitiesWithAuthor(self, author_name: str) -> pd.DataFrame:
+        # Takes: a string representing an author's name (partial or full).
+        # Returns: a pandas DataFrame with all publications written by that author.
+        # SUBQUERY WHY: Finds the internal_id first so the outer query can aggregate 
+        # the searched author with co-authors.
         with sqlite3.connect(self.getDbPathOrUrl()) as con:
             query = """
                 SELECT BibliographicEntity_Metadata.internal_id, title, pub_date, venue,
@@ -326,6 +336,11 @@ class BibliographicEntityQueryHandler(QueryHandler):
             return pd.read_sql(query, con, params=(f"%{author_name}%",))
 
     def getBibliographicEntitiesWithinPublicationDate(self, start_date: str = None, end_date: str = None) -> pd.DataFrame:
+        # Takes: optional start and end date strings.
+        # Returns: a pandas DataFrame with publications within the specified timeframe range.
+        # WHERE CLAUSE LOGIC: Dynamically appends conditions to a baseline "1=1" (always true) list. 
+        # It safely joins them via 'AND' depending on whether start_date, end_date, or both are provided.
+        # f-string: used because the query is dynamic and its structure changes based on the arguments passed.
         with sqlite3.connect(self.getDbPathOrUrl()) as con:
             where_clauses = ["1=1"]
             params = []
@@ -349,6 +364,8 @@ class BibliographicEntityQueryHandler(QueryHandler):
             return pd.read_sql(query, con, params=params)
 
     def getBibliographicEntitiesWithVenue(self, venue_name: str) -> pd.DataFrame:
+        # Takes: a string representing a venue name.
+        # Returns: a pandas DataFrame with all publications belonging to that venue.
         with sqlite3.connect(self.getDbPathOrUrl()) as con:
             query = """
                 SELECT BibliographicEntity_Metadata.internal_id, title, pub_date, venue,
