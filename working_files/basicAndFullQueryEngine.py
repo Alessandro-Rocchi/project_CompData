@@ -70,21 +70,29 @@ class BasicQueryEngine:
         entity.ids = clean_ids_list
         return entity
 
+    # Helper method to convert a DataFrame row into a Citation object. 
+    # It takes an optional argument "citation_class" which allows it to be used for different 
+    # types of citations by specifying the appropriate class when calling the method.
     def _row_to_citation_obj(self, row, citation_class=Citation) -> Citation: 
-        citation = citation_class()
+        citation = citation_class() # Create an instance of the specified citation class
 
+        # Populate the attributes of the citation object based on the DataFrame row. 
         citation.ids = [row.get("citation_id", "")]
         citation.creation = row.get("creation", "")
         citation.timespan = row.get("timespan", "")
         
+        # Create BibliographicEntity objects for the citing and cited entities 
+        # based on the IDs provided in the DataFrame row.
         citing_entity = BibliographicEntity()
         citing_entity.ids = [row.get("citing", "")]
 
         cited_entity = BibliographicEntity()
         cited_entity.ids = [row.get("cited", "")]
 
-        citation.hasCitingEntity = citing_entity
-        citation.hasCitedEntity = cited_entity
+        # Set the hasCitingEntity and hasCitedEntity attributes of the citation object to the 
+        # corresponding BibliographicEntity objects created above.
+        citation.hasCitingEntity = citing_entity 
+        citation.hasCitedEntity = cited_entity 
 
         return citation
     
