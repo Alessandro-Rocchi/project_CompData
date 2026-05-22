@@ -9,7 +9,7 @@ def main():
     bib = BibliographicEntityUploadHandler()
     bib.setDbPathOrUrl(rel_path)
     bib.pushDataToDb("data/dh_metadata.json")
-    grp_endpoint = "http://192.168.1.50:9999/blazegraph/sparql"
+    grp_endpoint = "http://192.168.20.23:9999/blazegraph/sparql"
     jou = CitationUploadHandler()
     jou.setDbPathOrUrl(grp_endpoint)
     jou.pushDataToDb("data/dh_citations.csv")
